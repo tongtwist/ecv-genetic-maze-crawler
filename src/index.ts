@@ -4,7 +4,7 @@ async function main(){
         console.log(`Unexpected argument(s): ${args[0]}`)
         process.exit(-1);
     }
-    else if (args[2] == undefined){
+    else if (args.length != 3){
         console.log(`Il n'y a pas le bon nombre d'argument`)
         process.exit(-1);
     }
