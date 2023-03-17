@@ -17,16 +17,24 @@ if (process.argv[2] === 'server') {
 }
 */
 function getParam(mode:string, arg1:string, arg2:number, primary:number = 0) {
+    console.log('------------------------');
+    var thisMode = mode
     if (primary != 0) {
-        mode = "worker"
+        thisMode = "worker"
+        if (arg2 == 0) {
+            arg2 = 1
+        }
     }
-
+    console.log('je suis mode : ', thisMode);
+    
     if (isNaN(arg2) == true || arg1 == "undefined"){
         console.log('argument manquant OU invalide');
         return ;
     };
-    if (mode === 'server') {
+    if (thisMode === 'server') {
         console.log("run in server");
+        console.log(arg1, arg2);
+        
         var http_port = parseInt(arg1)
         var tcp_port = arg2
         
@@ -34,17 +42,24 @@ function getParam(mode:string, arg1:string, arg2:number, primary:number = 0) {
             console.log('Valeur negative');
             return ; 
         }
-
-        getParam("", "localhost"+http_port+":"+tcp_port, 12, 1)
-        console.log('je lance un worker');
+        
+        var worker:any = getParam("", "localhost:"+http_port, 0, 1)
         
         return {
+        'server' : 
+            {
             'http_port' : http_port, 
             'tcp_port'  : tcp_port
+            },
+        worker
         }
-
+        
+// port max : 65535 port min : 5000 
+// os -> CPU 
     }else{
         console.log("run in worker");
+        console.log(arg1, arg2);
+        
         var local = arg1
         var nbThread = arg2
 
