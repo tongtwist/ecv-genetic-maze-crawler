@@ -6,28 +6,52 @@ export default function parseArgs(argv: string[]) {
         return null;
     }
 
-    const options: Toption = {
-        mode: 'server',
-        httpPort: 80,
-        tcpPort: 3000,
-    };
+    let options: Toption;
 
-    if (parseArgs.length >= 1) {
-        options.mode = parseArgs[0] as 'server' | 'worker';
-    }
+    if (parseArgs[0] === "server") {
+        options = {
+            mode: 'server',
+            httpPort: 80,
+            tcpPort: 3000,
+        };
 
-    if (parseArgs.length >= 2) {
-        options.httpPort = parseInt(parseArgs[1]);
-    }
+        if (parseArgs.length >= 2) {
+            options.httpPort = parseInt(parseArgs[1], 10);
+        }
 
-    if (parseArgs.length >= 3) {
-        options.tcpPort = parseInt(parseArgs[2]);
+        if (parseArgs.length >= 3) {
+            options.tcpPort = parseInt(parseArgs[2], 10);
+        }
+    } else if (parseArgs[0] === "worker") {
+        options = {
+            mode: 'worker',
+            serverSoket: "",
+            nbThread: 1,
+        };
+
+        if (parseArgs.length >= 2) {
+            options.serverSoket = parseArgs[1];
+        }
+
+        if (parseArgs.length >= 3) {
+            options.nbThread = parseInt(parseArgs[2], 10);
+        }
+    } else {
+        console.log(`Unknown mode: ${parseArgs[0]}`);
+        return null;
     }
 
     return options;
 }
-export interface Toption {
-    mode: 'server' | 'worker';
+
+export type Toption =
+    | {
+    mode: 'server';
     httpPort: number;
     tcpPort: number;
 }
+    | {
+    mode: 'worker';
+    serverSoket: string;
+    nbThread: number;
+};

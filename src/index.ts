@@ -1,7 +1,7 @@
 import parseArgs, {Toption} from './ParseArgs';
 
 async function main() {
-    const options: Toption | false = parseArgs(process.argv);
+    const options: Toption | null = parseArgs(process.argv);
 
     if (!options) {
         console.error('Unexpected arguments');
