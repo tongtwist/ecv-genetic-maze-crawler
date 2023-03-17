@@ -1,5 +1,6 @@
-import TOptions from "./parseArgs";
+import { TOptions, TServerOptions, TWorkerOptions } from "./parseArgs";
 import parseArgs from "./parseArgs";
+import cluster from "cluster";
 
 console.log("maze pathfinder");
 
@@ -12,9 +13,9 @@ async function main() {
     process.exit(-1);
   }
   if (options.mode === "server") {
-    console.log("Run as a server");
+    console.log(`Run as a server`);
   } else {
-    console.log("Run as a worker");
+    console.log(`Run as a worker`);
   }
 }
 main();
