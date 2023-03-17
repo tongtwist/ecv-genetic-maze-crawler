@@ -16,7 +16,11 @@ if (process.argv[2] === 'server') {
     var nbThread = parseInt(process.argv[4])
 }
 */
-function getParam(mode:string, arg1:string, arg2:number) {
+function getParam(mode:string, arg1:string, arg2:number, primary:number = 0) {
+    if (primary != 0) {
+        mode = "worker"
+    }
+
     if (isNaN(arg2) == true || arg1 == "undefined"){
         console.log('argument manquant OU invalide');
         return ;
@@ -31,6 +35,9 @@ function getParam(mode:string, arg1:string, arg2:number) {
             return ; 
         }
 
+        getParam("", "localhost"+http_port+":"+tcp_port, 12, 1)
+        console.log('je lance un worker');
+        
         return {
             'http_port' : http_port, 
             'tcp_port'  : tcp_port
