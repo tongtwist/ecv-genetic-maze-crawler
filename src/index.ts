@@ -1,6 +1,8 @@
 'use strict';
-
-getParam(process.argv[2],process.argv[3],parseInt(process.argv[4]))
+var action = getParam(process.argv[2],process.argv[3],parseInt(process.argv[4]))
+if (typeof action == "object") {
+    console.log(action);
+}
 
 /*
 if (process.argv[2] === 'server') {
@@ -15,8 +17,8 @@ if (process.argv[2] === 'server') {
 }
 */
 function getParam(mode:string, arg1:string, arg2:number) {
-    if (isNaN(arg2) == true || arg1 == "undefiend"){
-        console.log('erreur');
+    if (isNaN(arg2) == true || arg1 == "undefined"){
+        console.log('argument manquant OU invalide');
         return ;
     };
     if (mode === 'server') {
@@ -28,11 +30,20 @@ function getParam(mode:string, arg1:string, arg2:number) {
             console.log('Valeur negative');
             return ; 
         }
-        
+
+        return {
+            'http_port' : http_port, 
+            'tcp_port'  : tcp_port
+        }
 
     }else{
         console.log("run in worker");
         var local = arg1
         var nbThread = arg2
+
+        return {
+            'localhost' : local,
+            'nbThread'  : nbThread 
+        }
     }   
 }
