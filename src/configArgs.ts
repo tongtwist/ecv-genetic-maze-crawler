@@ -15,5 +15,6 @@ export function configArgs(mode? : string, config1?: string, config2?: string) {
             }
         }
     }
-    return console.log("error: un des élements de config est undefined ou pas du bon type")
+    console.log("error: un des élements de config est undefined ou pas du bon type")
+    return {config: false}
 }
