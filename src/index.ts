@@ -1,1 +1,1 @@
-console.log("maze pathfinder")
+console.log(process.argv);
