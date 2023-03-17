@@ -1,15 +1,16 @@
 import { parseArgs } from "node:util";
 
 const {
-  values: { name },
+  values: { arg },
 } = parseArgs({
   options: {
-    name: {
+    arg: {
       type: "string",
-      short: "n",
+      
     },
     
   },
 });
 
-console.log(`le nom est : ${name} `);
+arg === "server" ? console.log(`c'est le server`) : console.log("c'est un worker");
+
