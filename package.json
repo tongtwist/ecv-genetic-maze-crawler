@@ -4,6 +4,10 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "server": "node dist/index.js server",
+    "worker": "node dist/index.js worker",
     "test": "exit 0"
   },
   "repository": {
