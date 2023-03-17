@@ -1,19 +1,33 @@
-console.log("maze pathfinder")
+export default function parseArgs(argv: string[]) {
+    var parseArgs = process.argv.slice(2);
 
-export default function ReturnArgs() {
-    var args = process.argv.slice(2);
-
-    args.forEach(function (res) {
-        console.log(res);
-    });
-
-    if (args.length == 0) {
+    if (parseArgs.length == 0) {
         console.log("No arguments passed.");
+        return null;
     }
 
-    if(args[0] === "server"){
-        console.log("run as server");
-    } else {
-        console.log("run as worker");
+    const options: Toption = {
+        mode: 'server',
+        httpPort: 80,
+        tcpPort: 3000,
+    };
+
+    if (parseArgs.length >= 1) {
+        options.mode = parseArgs[0] as 'server' | 'worker';
     }
+
+    if (parseArgs.length >= 2) {
+        options.httpPort = parseInt(parseArgs[1]);
+    }
+
+    if (parseArgs.length >= 3) {
+        options.tcpPort = parseInt(parseArgs[2]);
+    }
+
+    return options;
+}
+export interface Toption {
+    mode: 'server' | 'worker';
+    httpPort: number;
+    tcpPort: number;
 }
