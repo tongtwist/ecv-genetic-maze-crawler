@@ -1,0 +1,23 @@
+{
+  "name": "ecv-genetic-maze-crawler",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tongtwist/ecv-genetic-maze-crawler.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tongtwist/ecv-genetic-maze-crawler/issues"
+  },
+  "homepage": "https://github.com/tongtwist/ecv-genetic-maze-crawler#readme",
+  "devDependencies": {
+    "@types/node": "^18.15.3",
+    "typescript": "^5.0.2"
+  }
+}
