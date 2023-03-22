@@ -1,16 +1,19 @@
 import {ILogger} from "./Logger.spec";
 
-export abstract class Logger implements ILogger {
-    readonly prefix: string;
-    protected constructor(prefix: string) {
-        this.prefix = prefix;
+export abstract class ShellLogger implements ILogger {
+    protected constructor(readonly _prefix?: string) {
+        Object.freeze(this);
+    }
+
+    get prefix(): string {
+        return this._prefix ?? "";
     }
 
     log(msg: string): void {
-        console.log(`${this.prefix} ${msg}`);
+        console.log(`${this._prefix} ${msg}`);
     }
 
     error(msg: string | Error): void {
-        console.error(`${this.prefix} ${msg}`);
+        console.error(`${this._prefix} ${msg}`);
     }
 }
