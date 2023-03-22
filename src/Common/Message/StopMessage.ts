@@ -4,7 +4,7 @@ import { z } from "zod";
 import {IResult} from "../Result.spec";
 import {Result} from "../Result";
 import {IBaseMessage} from "../Message.spec";
-export class StopMessage implements  TStopMessage{
+export class StopMessage implements  TStopMessage, IBaseMessage{
     static readonly type: TStopMessageTypes = 'stop';
     static readonly schema = z.object({
         type: z.literal(StopMessage.type),
