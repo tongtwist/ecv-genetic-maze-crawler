@@ -37,6 +37,5 @@ export  class Result <R = unknown> implements IResult<R> {
 
     static  failureIn<R = unknown>(functionName: string, error: Error | string): IResult<R> {
         return Result.failure<R>(`Error in ${functionName}(),${EOL}-> ${typeof error === 'string' ? error : error.message}`);
-
     }
 }

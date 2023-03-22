@@ -1,6 +1,6 @@
 import {TJSON} from "../../JSON.spec";
-import {TStopMessageTypes, TStopMessage} from "./Message/StopMessage.spec";
-import {THealthMessageTypes} from "./Message/HealthMessage.spec";
+import {TStopMessageTypes, TStopMessage, THealthMessage} from "./Message";
+import {THealthMessageTypes} from "./Message";
 
 export type TMessageType = TStopMessageTypes | THealthMessageTypes;
 export interface IBaseMessage {
@@ -8,7 +8,7 @@ export interface IBaseMessage {
     toJSON(): TJSON;
 }
 
-export type IMessage = TStopMessage ;
+export type TMessage = TStopMessage | THealthMessage;
 
 export type {
     TStopMessageTypes,

@@ -1,5 +1,5 @@
 import {THealthMessage, THealthMessageTypes, TLongCPUMessage, TShortCPUMessage} from "./HealthMessage.spec";
-import {IBaseMessage, TStopMessage} from "../Message.spec";
+import {IBaseMessage} from "../Message.spec";
 import {z} from "zod";
 import {TJSON, TJSONObject} from "../../../JSON.spec";
 import {IResult} from "../Result.spec";
@@ -116,5 +116,27 @@ export class HealthMessage implements IBaseMessage,THealthMessage {
         }
 
         return ret;
+    }
+
+    static fromJSON(j: TJSON): IResult<IBaseMessage & THealthMessage> {
+        const parsingRet = HealthMessage.parse(j);
+        if (parsingRet.IsSuccess) {
+            const msg = new HealthMessage(
+                parsingRet.value!.timestamp,
+                parsingRet.value!.loadavg,
+                parsingRet.value!.cpu,
+                parsingRet.value!.freemem,
+                parsingRet.value!.uptime,
+                parsingRet.value!.hostname,
+                parsingRet.value!.machine,
+                parsingRet.value!.platform,
+                parsingRet.value!.release,
+                parsingRet.value!.totalmem,
+                parsingRet.value!.version,
+                parsingRet.value!.architecture,
+            );
+            return Result.success(msg);
+        }
+        return Result.failureIn("HealthMessage.fromJSON", parsingRet.error!);
     }
 }
