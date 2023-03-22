@@ -22,7 +22,7 @@ async function main() {
 
     if (options.mode === 'server') {
         startServer(options.httpPort,options.tcpPort)
-        console.log('Running as server');
+        console.log('Running as Server');
     } else {
         startWorker(options.serverSoket,options.nbThread)
         console.log('Running as worker');
