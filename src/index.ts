@@ -1,6 +1,6 @@
 import parseArgs, {Toption} from './ParseArgs';
-import startServer from './Server/Server';
-import startWorker from './Worker/Worker';
+import startServer from './Server';
+import startWorker from './Worker';
 async function main() {
     const options: Toption | null = parseArgs(process.argv);
 
@@ -9,11 +9,8 @@ async function main() {
         process.exit(1);
     }
 
-    console.log(options);
-
     if (options.mode === 'server') {
         startServer(options.httpPort,options.tcpPort)
-        console.log('Running as Server');
     } else {
         startWorker(options.serverSoket,options.nbThread)
         console.log('Running as worker');
