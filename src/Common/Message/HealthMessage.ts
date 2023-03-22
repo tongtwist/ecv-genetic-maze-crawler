@@ -1,7 +1,7 @@
 import {THealthMessage, THealthMessageTypes, TLongCPUMessage, TShortCPUMessage} from "./HealthMessage.spec";
 import {IBaseMessage} from "../Message.spec";
 import {z} from "zod";
-import {TJSON, TJSONObject} from "../../../JSON.spec";
+import {TJSON, TJSONObject} from "../../JSON.spec";
 import {IResult} from "../Result.spec";
 import {Result} from "../Result";
 

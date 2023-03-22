@@ -1,4 +1,4 @@
-import {TJSON} from "../../JSON.spec";
+import {TJSON} from "../JSON.spec";
 import {TStopMessageTypes, TStopMessage, THealthMessage} from "./Message";
 import {THealthMessageTypes} from "./Message";
 

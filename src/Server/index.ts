@@ -6,11 +6,17 @@ import path from "path";
 import {Socket as SocketIO} from "socket.io/dist/socket";
 import type {IMaze} from "./Maze.spec";
 import {Maze} from "./Maze";
+import {IRemoterWorker} from "./RemoteWorker.spec";
+import {Worker} from "node:cluster";
+import cluster from "cluster";
+import {TJSON} from "../JSON.spec";
+import {RemoteIPCWorker} from "./RemoteIPCWorker";
 
 
 
 export default function startServer(httpPort: number, tcpPort: number) {
     let maze : IMaze | null = null;
+    const appLogger = new ShellLogger('SERVER');
 
     const expressApp = express();
     const httpServer = http.createServer(expressApp);
@@ -45,4 +51,19 @@ export default function startServer(httpPort: number, tcpPort: number) {
     httpServer.listen(httpPort, () => {
         ServerLog.log("Server is up on port " + httpPort);
     });
+
+    const remoteWorkers: { [id: string]: IRemoterWorker } = {};
+    cluster.on('online', (worker:Worker) => {
+       const workerID = `IPC${worker.id}`;
+       const Logger = new ShellLogger(`[Worker ${workerID}]`);
+       remoteWorkers[workerID] = new RemoteIPCWorker(Logger, worker);
+       remoteWorkers[workerID].listen();
+       remoteWorkers[workerID].subscribe('health', (data: TJSON) => {
+
+       });
+       worker.on("disconnect", () => delete remoteWorkers[workerID]);
+       appLogger.log(`Remote local worker ${workerID} is online`);
+    });
+    appLogger.log(`Lauch a local worker`);
+    cluster.fork();
 }

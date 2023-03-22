@@ -4,7 +4,7 @@ import { Result } from "../Result";
 import { IResult } from "../Result.spec";
 import { HealthMessage } from "./HealthMessage";
 import { StopMessage } from "./StopMessage";
-import {TJSON} from "../../../JSON.spec";
+import {TJSON} from "../../JSON.spec";
 
 const baseMessageSchema = z.object({
     type: z.string().nonempty(),

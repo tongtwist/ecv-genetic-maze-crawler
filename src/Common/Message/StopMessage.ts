@@ -1,5 +1,5 @@
 import {TStopMessage, TStopMessageTypes} from "./StopMessage.spec";
-import {TJSON, TJSONObject} from "../../../JSON.spec";
+import {TJSON, TJSONObject} from "../../JSON.spec";
 import { z } from "zod";
 import {IResult} from "../Result.spec";
 import {Result} from "../Result";
