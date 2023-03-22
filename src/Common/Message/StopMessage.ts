@@ -3,7 +3,7 @@ import {TJSON, TJSONObject} from "../../../JSON.spec";
 import { z } from "zod";
 import {IResult} from "../Result.spec";
 import {Result} from "../Result";
-import {IBaseMessage} from "./Message.spec";
+import {IBaseMessage} from "../Message.spec";
 export class StopMessage implements  TStopMessage{
     static readonly type: TStopMessageTypes = 'stop';
     static readonly schema = z.object({
@@ -36,6 +36,6 @@ export class StopMessage implements  TStopMessage{
         if (parsingRet.IsSuccess) {
             return Result.success(new StopMessage());
         }
-        return parsingRet;
+        return Result.failureIn("StopMessage.fromJSON", parsingRet.error!);
     }
 }
