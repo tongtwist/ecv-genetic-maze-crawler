@@ -4,18 +4,6 @@ if (typeof action == "object") {
     console.log(action);
 }
 
-/*
-if (process.argv[2] === 'server') {
-    console.log("run in server");
-    var http_port = parseInt(process.argv[3])
-    var tcp_port = parseInt(process.argv[4])
-    
-}else{
-    console.log("run in worker");
-    var local = parseInt(process.argv[3])
-    var nbThread = parseInt(process.argv[4])
-}
-*/
 function getParam(mode:string, arg1:string, arg2:number, primary:number = 0) {
     console.log('------------------------');
     var thisMode = mode
