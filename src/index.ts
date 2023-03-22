@@ -1,6 +1,7 @@
 import parseArgs, {Toption} from './ParseArgs';
 import startServer from './Server';
 import startWorker from './Worker';
+import cluster from "cluster";
 async function main() {
     const options: Toption | null = parseArgs(process.argv);
 
@@ -9,11 +10,16 @@ async function main() {
         process.exit(1);
     }
 
-    if (options.mode === 'server') {
+    if (options.mode === 'server' && cluster.isPrimary) {
         startServer(options.httpPort,options.tcpPort)
-    } else {
-        startWorker(options.serverSoket,options.nbThread)
-        console.log('Running as worker');
+        cluster.fork();
+    } else if (options.mode === 'worker' || cluster.isWorker){
+        if (options.mode === 'worker' ){
+            startWorker(options.serverSoket,options.nbThread)
+            console.log('Running as worker');
+        } else {
+            console.log('Running as cluster worker');
+        }
     }
 }
 
