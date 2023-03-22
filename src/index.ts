@@ -1,12 +1,15 @@
 import parseArgs, {Toption} from './ParseArgs';
+import ShellLogger from "./Common/Logger";
 
 function startServer(httpPort: number, tcpPort: number) {
-    console.log("serveur" + httpPort + "et" + tcpPort);
+    const logger = new ShellLogger('SERVER', true);
+    logger.log(`Starting server on httpPort:${httpPort} and tcpPort:${tcpPort}`);
 }
 
 function startWorker(serverSocket: string, numThreads: number) {
+    const logger = new ShellLogger('WORKER', true);
     for (let i = 0; i < numThreads; i++) {
-        console.log("worker"+i);
+        logger.log(`Starting worker ${i} with serverSocket: ${serverSocket}`);
     }
 }
 
