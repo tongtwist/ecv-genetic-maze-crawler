@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Genetic Maze Crawler</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script src="js/socket.io.min.js"></script>
+</head>
+<body>
+	<main>
+		<h1>Genetic Maze Crawler</h1>
+		<div id="canvas-container">
+			<div>
+				Last server activity is: <span id="serverState">Disconnected from server</span>
+			</div>
+			<canvas id="mazeCanvas"></canvas>
+			<canvas id="solutionsCanvas"></canvas>
+		</div>
+		<div id="stats"></div>
+	</main>
+	<script src="js/maze.js"></script>
+	<script src="js/ui.js"></script>
+</body>
+</html>
