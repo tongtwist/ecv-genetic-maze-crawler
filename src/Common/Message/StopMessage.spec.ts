@@ -1,5 +1,5 @@
-export type TStopMessageTypes = 'stop';
+export type TStopMessageType = "stop"
 
 export type TStopMessage = {
-   readonly type: TStopMessageTypes;
+	readonly type: TStopMessageType
 }
