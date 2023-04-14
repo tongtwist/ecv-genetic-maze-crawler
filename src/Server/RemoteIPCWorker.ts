@@ -10,18 +10,16 @@ import {
 } from "../Common"
 import type { IRemoteWorker } from "./RemoteWorker.spec"
 import type { Serializable } from "node:child_process"
+import { BaseRemoteWorker } from "./BaseRemoteWorker"
 
-export class RemoteIPCWorker implements IRemoteWorker {
-	private _listening: boolean = false
-	private _messageHandlers: { [k: string]: (data: TJSON) => void } = {}
-	private _lastHealth?: IBaseMessage & THealthMessage
-
+export class RemoteIPCWorker extends BaseRemoteWorker implements IRemoteWorker {
+	
 	constructor(
-		private readonly _logger: ILogger,
+		readonly _logger: ILogger,
 		private readonly _worker: Worker
-	) {}
-
-	get lastHealth() { return this._lastHealth }
+	) {
+		super(_logger)
+	}
 
 	private _messageHandler(data: TJSON) {
 		const retMessage = messageFromJSON(data)
@@ -38,10 +36,6 @@ export class RemoteIPCWorker implements IRemoteWorker {
 		}
 	}
 
-	setHealth(v: IBaseMessage & THealthMessage): void {
-		this._lastHealth = v
-	}
-	
 	listen() {
 		this._worker.on("message", this._messageHandler.bind(this))
 		this._listening = true
@@ -58,13 +52,5 @@ export class RemoteIPCWorker implements IRemoteWorker {
 
 	async send(data: TJSON): Promise<boolean> {
 		return this._worker.send(data as Serializable)
-	}
-
-	subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
-		if (!this._listening) {
-			return false
-		}
-		this._messageHandlers[type] = handler
-		return true
 	}
 }

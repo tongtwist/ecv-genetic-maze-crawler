@@ -6,23 +6,19 @@ import {
     messageFromJSON,
     ILogger,
     THealthMessage,
-    StopMessage,
+    StopMessage
 } from "../Common";
 import type { IRemoteWorker } from "./RemoteWorker.spec";
+import { BaseRemoteWorker } from "./BaseRemoteWorker";
 
-export class RemoteTCPWorker implements IRemoteWorker {
-    private _listening: boolean = false;
-    private _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
-    private _lastHealth?: IBaseMessage & THealthMessage;
+export class RemoteTCPWorker extends BaseRemoteWorker implements IRemoteWorker {
 
     constructor(
-        private readonly _logger: ILogger,
+		readonly _logger: ILogger,
         private readonly _socket: net.Socket
-    ) { }
-
-    get lastHealth() {
-        return this._lastHealth;
-    }
+    ) {
+		super(_logger)
+	}
 
     private _messageHandler(data: TJSON) {
         const retMessage = messageFromJSON(data);
@@ -39,16 +35,12 @@ export class RemoteTCPWorker implements IRemoteWorker {
         }
     }
 
-    setHealth(v: IBaseMessage & THealthMessage): void {
-        this._lastHealth = v;
-    }
-
     listen() {
         this._socket.on("data", (data: Buffer) => {
             this._messageHandler(data.toString());
         });
         this._listening = true;
-        this._logger.log(`Listening TCP Worker :${this._socket}...`);
+        this._logger.log(`Listening TCP Worker ${this._socket.remoteAddress}:${this._socket.remotePort}...`);
     }
 
     stop() {
@@ -79,13 +71,5 @@ export class RemoteTCPWorker implements IRemoteWorker {
                 resolve(true);
             });
         });
-    }
-
-    subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
-        if (!this._listening) {
-            return false;
-        }
-        this._messageHandlers[type] = handler;
-        return true;
     }
 }
