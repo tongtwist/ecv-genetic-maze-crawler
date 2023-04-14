@@ -1,4 +1,4 @@
-import type { IMaze } from "../../Server/Maze.spec";
+import type { IMaze } from "../Maze.spec";
 import type { TCellJSON, ICell } from "./Cell.spec";
 
 export class Cell implements ICell {

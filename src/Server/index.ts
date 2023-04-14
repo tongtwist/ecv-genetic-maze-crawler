@@ -9,7 +9,7 @@ import {
   Server as SocketIOServer,
   Socket as SocketIO,
 } from "socket.io";
-import type { IMaze } from "./Maze.spec";
+import type { IMaze } from "../Common/Maze.spec";
 
 import {
   IResult,
