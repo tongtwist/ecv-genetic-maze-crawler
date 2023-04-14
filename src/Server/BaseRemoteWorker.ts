@@ -13,6 +13,7 @@ export abstract class BaseRemoteWorker implements IRemoteWorker {
   protected _listening: boolean = false;
   protected _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
   protected _lastHealth?: IBaseMessage & THealthMessage;
+  protected _remotWorkerLabel!: string;
 
   constructor(protected readonly _logger: ILogger) {}
 
@@ -54,6 +55,7 @@ export abstract class BaseRemoteWorker implements IRemoteWorker {
     this._logger.log(`Stop to listen TCP Worker`);
     const msg = new StopMessage();
     this.send(msg.toJSON());
+    // this._worker.send(msg.toJSON())
   }
 
   abstract send(data: TJSON): Promise<boolean>;

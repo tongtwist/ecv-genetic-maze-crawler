@@ -17,6 +17,7 @@ export class RemoteIPCWorker extends BaseRemoteWorker {
     protected readonly _worker: Worker
   ) {
     super(_logger);
+    this._remotWorkerLabel = `IPC WORKER ${_worker.id}`;
   }
 
   listen() {
