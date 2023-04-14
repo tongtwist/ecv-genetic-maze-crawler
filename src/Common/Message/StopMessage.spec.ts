@@ -1,5 +1,6 @@
-export type TStopMessageType = "stop"
+export type TStopMessageType = "stop";
 
 export type TStopMessage = {
-	readonly type: TStopMessageType
-}
+  readonly type: TStopMessageType;
+  readonly hostname: string;
+};
