@@ -1,8 +1,8 @@
-import {IGenome TGene } from './Genome.spec';
+import {IGenome, TGene } from './Genome.spec';
 import {IGuy} from './Guy.spec';
 import {Genome} from './Genome';
 
-export class Guy implements IGuy{
+export class Guy implements IGuy {
     constructor(
         public _age: number,
         public readonly _genome: IGenome
@@ -22,9 +22,18 @@ export class Guy implements IGuy{
         return new Guy(0, genome)
     }
 
-     static birth(maze: IMaze, mother: IGuy, father: IGuy){
-        const genome = Genome.from(mother.genome.genes)
-        genome.mutate(0.01)
+    static birth(mother: IGuy, father: IGuy): Guy {
+        const motherGenome = mother.genome.genes
+        const fatherGenome = father.genome.genes
+
+        const motherhalf = Math.ceil( mother.genome.length / 2)
+        const fatherhalf = Math.ceil( father.genome.length / 2)
+
+        const enfantGenome: TGene[] = [
+            ...motherGenome.slice(0, motherhalf),
+            ...fatherGenome.slice(fatherhalf)
+        ]
+        const genome = Genome.from(enfantGenome)
         return new Guy(0, genome)
     }
 
@@ -54,7 +63,7 @@ export class Guy implements IGuy{
         }
     }
 
-    vieilliss(){
+    vieillis(){
         this._age++
     }
 
