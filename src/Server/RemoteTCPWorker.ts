@@ -33,7 +33,7 @@ export class RemoteTCPWorker extends BaseRemoteWorker implements IRemoteWorker {
         this._socket.on('data', (data: Buffer) => {
             const message = JSON.parse(data.toString())
             this._logger.log(`-> ${JSON.stringify(message.hostname)}`)
-            this._logger.log(`-> ${JSON.stringify(message.speed)}`)
+            this._logger.log(`-> ${JSON.stringify(message.timestamp)}`)
             this._logger.log(`-> ${JSON.stringify(message.loadAvg)}`)
         })
 
