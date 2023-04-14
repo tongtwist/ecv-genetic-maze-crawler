@@ -12,7 +12,7 @@ export class RemoteWorker implements IRemoteWorker {
     private _connected: boolean = false
     
 	constructor(
-		readonly _logger: ILogger,
+		private readonly _logger: ILogger,
         private readonly _socket : Socket
 	) {
         this._adr = this._socket.address()
@@ -45,7 +45,8 @@ export class RemoteWorker implements IRemoteWorker {
     listen(): void {
         this._logger.log(`Listening TCP Worker ${this._remoteWorkerLabel} ...`)
         this._listening=true
-        this._socket.on('data', function(this: RemoteWorker, data) {
+       
+        this._socket.on('data', (data) => {
             this._logger.log(`Received : ${data}`  );
             this._messageHandler.bind(this)
         }); 
@@ -54,7 +55,7 @@ export class RemoteWorker implements IRemoteWorker {
 
     stop(): void {
 		this._logger.log(`Do not listen TCP Worker ${this._remoteWorkerLabel} anymore`)
-        this._socket.on('close',function(this: RemoteWorker){
+        this._socket.on('close',() =>{
             this._logger.log(` ${this._remoteWorkerLabel} :Connection Closed`); 
          });
     }
@@ -65,7 +66,7 @@ export class RemoteWorker implements IRemoteWorker {
 			return Promise.resolve(false)
 		}
 		return new Promise((resolve: (v: boolean) => void) => {
-            this._socket.connect(8080,function(this: RemoteWorker){
+            
                 this._socket.on('error',function(error){
                     console.error(` ${error}`); 
                     return resolve(false)
@@ -74,10 +75,12 @@ export class RemoteWorker implements IRemoteWorker {
                 this._logger.log(`${this._remoteWorkerLabel}: Connected to server on port 8080`);
                 const result = this._socket.write(JSON.stringify(data));
                 return  resolve(result)
-            });
+            
            
         }) 
     }
+
+   
 
     subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
         if (!this._listening) {
