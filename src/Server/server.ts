@@ -6,6 +6,11 @@ import http from "node:http";
 import express from "express";
 import {Socket as SocketIO, Server as SocketIOServer} from "socket.io"
 import { Maze } from "./Maze";
+import { IRemoteWorker } from "./RemoteWorker.spec";
+import { RemoteIPCWorker } from "./RemoteIPCWorker";
+import { IBaseMessage, IResult, messageFromJSON, THealthMessage, TJSON } from "../Common";
+import cluster from "cluster";
+import { Worker } from "node:cluster";
 
 export const serverFunction =(mode: string, httpPort: string, tcpPort: string) => {
     const logger = new Logger("server")
@@ -43,6 +48,28 @@ export const serverFunction =(mode: string, httpPort: string, tcpPort: string) =
     })
 
     httpServer.listen(httpPort, () => logger.log(`HTTP service listen on port ${httpPort}`))
+
+    const remoteWorkers: {[id :string]: IRemoteWorker} = {}
+    cluster.on("online", (worker : Worker) => {
+        const workerId = `IPC${worker.id}`
+        remoteWorkers[workerId] = new RemoteIPCWorker(new Logger(workerId), worker)
+        remoteWorkers[workerId].listen()
+        remoteWorkers[workerId].subscribe("health", (data: TJSON) => {
+            const retHealthMessage = messageFromJSON(data)as IResult<IBaseMessage & THealthMessage>
+            if(retHealthMessage.isFailure){
+                logger.log(retHealthMessage.error!.message)
+                return
+            }
+            remoteWorkers[workerId].setHealth(retHealthMessage.value!)
+        })
+            worker.on("disconnect", () => delete remoteWorkers[workerId])
+            logger.log(`remote local worker ${workerId} is online`)
+            setTimeout(() => remoteWorkers[workerId].stop(), 10000)
+
+        })
+        logger.log("launch a local worker")
+        cluster.fork()
+   
 
     logger.log(JSON.stringify(configArgs(mode, httpPort, tcpPort)));
     workerFunction("worker", httpPort, "2")
