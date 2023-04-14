@@ -6,7 +6,7 @@ import {Socket, createServer} from "node:net"
 import express from "express"
 import { DisconnectReason, Server as SocketIOServer, Socket as SocketIO } from "socket.io"
 import type { IMaze } from "../Server/Maze.spec"
-import { Maze } from "./Maze"
+import { Maze } from "../Common/Maze"
 
 import { IResult, TJSON, messageFromJSON, Logger, IBaseMessage, THealthMessage } from "../Common"
 import type { IRemoteWorker } from "./RemoteWorker.spec"
