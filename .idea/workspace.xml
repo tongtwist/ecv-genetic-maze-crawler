@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a6e33cf0-e6b4-40d1-ba5d-2045a7bd61d6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/Common/Genome.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Common/Genome.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Common/Guy.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Common/Guy.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/Maze.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/Maze.spec.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/Maze/Cell.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/Maze/Cell.spec.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/Maze/Cell.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/Maze/Cell.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/Maze/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/Maze/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,7 +78,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="c993b7a5-3c62-4b1f-a304-26de3fe38a25" name="Changes" comment="" />
+      <changelist id="a6e33cf0-e6b4-40d1-ba5d-2045a7bd61d6" name="Changes" comment="" />
       <created>1679042433337</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -89,6 +88,7 @@
       <workItem from="1679473555655" duration="1871000" />
       <workItem from="1679475526676" duration="21906000" />
       <workItem from="1681455677113" duration="8537000" />
+      <workItem from="1681484731678" duration="1366000" />
     </task>
     <servers />
   </component>
