@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "ecv-genetic-maze-crawler",
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"typescript.tsdk": "node_modules/typescript/lib"
+	}
+}
