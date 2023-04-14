@@ -5,10 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a6e33cf0-e6b4-40d1-ba5d-2045a7bd61d6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Server/BaseRemoteWorker.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/RemoteIPCWorker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/RemoteIPCWorker.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/RemoteTCPWorker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/RemoteTCPWorker.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/Maze.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/Maze.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/Maze/Cell.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/Maze/Cell.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/Maze/Cell.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/Maze/Cell.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/Maze/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Common/Maze/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,8 +70,8 @@
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/src/Common" />
+      <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/src/Worker" />
       <recent name="$PROJECT_DIR$/src/Server" />
     </key>
