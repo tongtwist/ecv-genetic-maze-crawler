@@ -2,6 +2,7 @@ import path from "node:path";
 import http from "node:http";
 import process from "node:process";
 import cluster, { Worker } from "node:cluster";
+import { Socket, createServer } from "node:net";
 import express from "express";
 import {
   DisconnectReason,
@@ -9,7 +10,6 @@ import {
   Socket as SocketIO,
 } from "socket.io";
 import type { IMaze } from "./Maze.spec";
-import { Maze } from "./Maze";
 
 import {
   IResult,
@@ -22,7 +22,7 @@ import {
 import type { IRemoteWorker } from "./RemoteWorker.spec";
 import { RemoteIPCWorker } from "./RemoteIPCWorker";
 import { RemoteTCPWorker } from "./RemoteTCPWorker";
-import { Socket, createServer } from "node:net";
+import { Maze } from "./Maze";
 
 export type TServerConfig = {
   readonly httpPort: number;
@@ -81,7 +81,31 @@ export function processBehavior(cfg: TServerConfig) {
     appLogger.log(`HTTP service listening on port ${cfg.httpPort}...`)
   );
 
-  createServer(
+  const remoteWorkers: { [id: string]: IRemoteWorker } = {};
+  let exitHandling = false;
+  cluster.on("online", (worker: Worker) => {
+    const workerID = `IPC${worker.id}`;
+    appLogger.log(`Remote local worker "${workerID}" is online`);
+    remoteWorkers[workerID] = new RemoteIPCWorker(
+      Logger.create(`(from ${workerID}) `),
+      worker
+    );
+    remoteWorkers[workerID].listen();
+    remoteWorkers[workerID].subscribe("health", (data: TJSON) => {
+      const retHealthMessage = messageFromJSON(data) as IResult<
+        IBaseMessage & THealthMessage
+      >;
+      if (retHealthMessage.isFailure) {
+        appLogger.err(retHealthMessage.error!.message);
+        return;
+      }
+      remoteWorkers[workerID].setHealth(retHealthMessage.value!);
+      appLogger.log(`Remote worker "${workerID}" is healthy`);
+    });
+    worker.on("disconnect", () => delete remoteWorkers[workerID]);
+  });
+
+  const serverTCPSocket = createServer(
     {
       noDelay: true,
       keepAlive: true,
@@ -110,29 +134,24 @@ export function processBehavior(cfg: TServerConfig) {
     }
   );
 
-  const remoteWorkers: { [id: string]: IRemoteWorker } = {};
-  cluster.on("online", (worker: Worker) => {
-    const workerID = `IPC${worker.id}`;
-    remoteWorkers[workerID] = new RemoteIPCWorker(
-      Logger.create(workerID),
-      worker
-    );
-    remoteWorkers[workerID].listen();
-    remoteWorkers[workerID].subscribe("health", (data: TJSON) => {
-      const retHealthMessage = messageFromJSON(data) as IResult<
-        IBaseMessage & THealthMessage
-      >;
-      if (retHealthMessage.isFailure) {
-        appLogger.err(retHealthMessage.error!.message);
-        return;
+  async function stopServer(exitCode?: number): Promise<void> {
+    if (!exitHandling) {
+      exitHandling = true;
+      appLogger.log("Server is stopping, stop all remote workers ...");
+      for (const workerID in remoteWorkers) {
+        await remoteWorkers[workerID].stop();
       }
-      remoteWorkers[workerID].setHealth(retHealthMessage.value!);
-    });
-    worker.on("disconnect", () => delete remoteWorkers[workerID]);
-    appLogger.log(`Remote local worker "${workerID}" is online`);
+      appLogger.log("Server stopped");
+    }
+    setTimeout(() => process.exit(exitCode ?? 0), 0);
+  }
 
-    setTimeout(() => remoteWorkers[workerID].stop(), 10000);
-  });
+  process.on("SIGINT", stopServer);
+  process.on("exit", stopServer);
+
   appLogger.log("Launch a local worker");
   cluster.fork();
+
+  appLogger.log(`TCP service listening on port ${cfg.tcpPort}...`);
+  serverTCPSocket.listen(cfg.tcpPort);
 }
