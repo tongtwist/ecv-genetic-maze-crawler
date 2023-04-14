@@ -1,25 +1,25 @@
-import type {TJSON} from "../Common"
+import type { TJSON } from "../Common";
 import type {
-	THealthMessageType, THealthMessage,
-	TStopMessageType, TStopMessage,
+  THealthMessageType,
+  THealthMessage,
+  TStopMessageType,
+  TStopMessage,
+} from "./Message";
 
-} from "./Message"
-
-export type TMessageType =
-	| THealthMessageType
-	| TStopMessageType
+export type TMessageType = THealthMessageType | TStopMessageType;
 
 export interface IBaseMessage {
-	readonly type: TMessageType
-	toJSON(): TJSON
+  readonly type: TMessageType;
+  toJSON(): TJSON;
 }
 
-export type TMessage =
-	| THealthMessage
-	| TStopMessage
+export type TMessage = THealthMessage | TStopMessage;
 
 export type {
-	THealthMessageType, TShortCPUMessage, TLongCPUMessage, THealthMessage,
-	TStopMessageType, TStopMessage,
-	
-} from "./Message"
+  THealthMessageType,
+  TShortCPUMessage,
+  TLongCPUMessage,
+  THealthMessage,
+  TStopMessageType,
+  TStopMessage,
+} from "./Message";

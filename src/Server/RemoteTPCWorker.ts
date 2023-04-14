@@ -1,4 +1,3 @@
-import { Worker } from "node:cluster";
 import {
   TJSON,
   TMessageType,
@@ -10,16 +9,57 @@ import {
 } from "../Common";
 import type { IRemoteWorker } from "./RemoteWorker.spec";
 import type { Serializable } from "node:child_process";
+import { Socket } from "net";
+import { AddressInfo } from "node:net";
 
-export class RemoteIPCWorker implements IRemoteWorker {
+export class RemoteTPCWorker implements IRemoteWorker {
+  private readonly _adr: AddressInfo | {};
   private _listening: boolean = false;
   private _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
   private _lastHealth?: IBaseMessage & THealthMessage;
 
   constructor(
-    private readonly _logger: ILogger,
+    private _logger: ILogger,
+    private readonly _socket: Socket,
     private readonly _worker: Worker
-  ) {}
+  ) {
+    this._adr = this._socket.address();
+    this._remoteWorkerLabel = `TCP Worker ${this._adrToString()}`;
+  }
+
+  private _adrToString(): string {
+    return "family" in this._adr
+      ? `${this._adr.family}://${this._adr.address}:${this._adr.port}`
+      : "";
+  }
+
+  listen() {
+    this._logger.log(`Connected TCP Worker`);
+
+    this._socket.on("data", (data) => {
+      const dataStr = data.toString();
+      const dataJSON = JSON.parse(dataStr);
+      this._messageHandler(dataJSON);
+    });
+
+    this._socket.on("end", () => {
+      this._logger.log(`TCP Worker disconnected ${this._adrToString()}`);
+    });
+  }
+
+  async send(data: TJSON): Promise<boolean> {
+    if (!this._socket) {
+      return Promise.reject(
+        `Not connected to TCP Worker ${this._adrToString()}`
+      );
+    }
+
+    return new Promise((resolve) => {
+      this._socket.write(JSON.stringify(data), () => {
+        resolve(true);
+      });
+    });
+  }
 
   get lastHealth() {
     return this._lastHealth;
@@ -44,22 +84,12 @@ export class RemoteIPCWorker implements IRemoteWorker {
     this._lastHealth = v;
   }
 
-  listen() {
-    this._worker.on("message", this._messageHandler.bind(this));
-    this._listening = true;
-    this._logger.log(`Listening IPC Worker ${this._worker.id} ...`);
-  }
-
   stop() {
     this._messageHandlers = {};
     this._listening = false;
     this._logger.log(`Do not listen IPC Worker ${this._worker.id} anymore`);
     const msg = new StopMessage();
     this._worker.send(msg.toJSON());
-  }
-
-  async send(data: TJSON): Promise<boolean> {
-    return this._worker.send(data as Serializable);
   }
 
   subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
