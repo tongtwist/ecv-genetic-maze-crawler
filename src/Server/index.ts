@@ -10,7 +10,7 @@ import {
     Socket as SocketIO,
 } from 'socket.io'
 import type { IMaze } from './Maze.spec'
-import { Maze } from './Maze'
+import { Maze } from '../Common/Maze'
 
 import {
     IResult,
