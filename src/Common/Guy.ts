@@ -1,5 +1,7 @@
 import {IGuy, Position, Walk} from "./Guy.spec";
-import {IGenome} from "./Genome.spec";
+import {IGenome, TGene} from "./Genome.spec";
+import {IMaze} from "../Server/Maze.spec";
+import {Genome} from "./Genome";
 
 export class Guy implements IGuy {
     age: number;
@@ -66,5 +68,28 @@ export class Guy implements IGuy {
 
     public vieillir(): void {
         this.age++;
+    }
+
+    public create(maze:IMaze){
+        const genes: TGene[] = [];
+        for (let i = 0; i < 100; i++) {
+            genes.push(Math.floor(Math.random() * 4) as TGene);
+        }
+        const genome = new Genome(genes);
+        return new Guy(genome);
+    }
+
+    public birth(maze:IMaze, mother:IGuy, father: IGuy){
+        const genes: TGene[] = [];
+        for (let i = 0; i < 100; i++) {
+            const gene = Math.floor(Math.random() * 2);
+            if (gene === 0){
+                genes.push(mother.genome.genes[i]);
+            } else {
+                genes.push(father.genome.genes[i]);
+            }
+        }
+        const genome = new Genome(genes);
+        return new Guy(genome);
     }
 }
