@@ -7,7 +7,6 @@ import {
 	THealthMessage,
 	StopMessage
 } from "../Common"
-import {Socket} from "net";
 
 export abstract class BaseRemoteWorker {
     protected _lastHealth?: IBaseMessage & THealthMessage
