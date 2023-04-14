@@ -80,6 +80,7 @@ export function processBehavior(cfg: TServerConfig) {
     appLogger.log(`HTTP service listening on port ${cfg.httpPort}...`)
   );
 
+  // const serverTCPSocket = new RemoteTCPWorker();
   // const serverTCPSocket = new RemoteTCPWorker(
 
   // );

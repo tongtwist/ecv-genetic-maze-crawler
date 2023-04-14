@@ -46,24 +46,31 @@ export class RemoteTCPWorker implements IRemoteWorker {
   }
 
   listen(): void {
-    const server = createServer((socket) => {
-      this._socket = socket;
+    const server = createServer(
+      {
+        noDelay: true,
+        keepAlive: true,
+        keepAliveInitialDelay: 1000,
+      },
+      (socket) => {
+        this._socket = socket;
 
-      socket.on("data", (data) => {
-        try {
-          const jsonData = JSON.parse(data.toString());
-          this._messageHandler(jsonData);
-        } catch (err) {
-          this._logger.err("Problem when received data");
-        }
-      });
+        socket.on("data", (data) => {
+          try {
+            const jsonData = JSON.parse(data.toString());
+            this._messageHandler(jsonData);
+          } catch (err) {
+            this._logger.err("Problem when received data");
+          }
+        });
 
-      socket.write("Hello from TCP Worker");
+        socket.write("Hello from TCP Worker");
 
-      socket.on("close", () => {
-        this._logger.log(`TCP Worker is now disconnected`);
-      });
-    });
+        socket.on("close", () => {
+          this._logger.log(`TCP Worker is now disconnected`);
+        });
+      }
+    );
 
     server.listen(this._port, () => {
       this._listening = true;
