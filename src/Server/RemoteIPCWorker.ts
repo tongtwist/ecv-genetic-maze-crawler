@@ -19,22 +19,6 @@ export class RemoteIPCWorker extends BaseRemoteWorker implements IRemoteWorker {
 	}
 
 
-
-	private _messageHandler(data: TJSON) {
-		const retMessage = messageFromJSON(data)
-		if (retMessage.isSuccess) {
-			const message = retMessage.value!
-			if (message.type in this._messageHandlers) {
-				this._logger.log(`-> Process ${message.type} message...`)
-				this._messageHandlers[message.type](data)
-			} else {
-				this._logger.log(`-> Skip "${message.type}" message type`)
-			}
-		} else {
-			this._logger.err(retMessage.error!.message)
-		}
-	}
-
 	stop() {
 		this._messageHandlers = {};
 		this._listening = false;
