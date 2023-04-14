@@ -15,3 +15,4 @@ export type {
   TStopMessage,
   TStopMessageType,
 } from "./Messages/StopMessage.spec";
+export { TLongCPUMessage, TShortCPUMessage, THealthMessage } from "./Messages";

@@ -1,6 +1,7 @@
 import { TOptions, TServerOptions, TWorkerOptions } from "./parseArgs";
 import parseArgs from "./parseArgs";
 import cluster from "cluster";
+import { processBehavior, TWorkerConfig } from "./Worker";
 
 async function main() {
   const options: TOptions | null = parseArgs(process.argv) as TOptions;
@@ -15,10 +16,9 @@ async function main() {
   if ((options as TOptions).mode === "server" && cluster.isPrimary) {
     let { server } = await require("./Server");
     server(options as TServerOptions);
-    cluster.fork();
   } else if ((options as TOptions).mode === "worker" || cluster.isWorker) {
     let { worker } = await require("./Worker");
-    worker(options as TWorkerOptions);
+    processBehavior(options as any);
   }
 }
 

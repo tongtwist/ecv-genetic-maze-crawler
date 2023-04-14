@@ -6,10 +6,20 @@ import {
   DisconnectReason,
   Socket as SocketIO,
 } from "socket.io";
-import { ShellLogger } from "../Common/Logger";
+import {
+  IBaseMessage,
+  IResult,
+  messageFromJSON,
+  ShellLogger,
+  THealthMessage,
+} from "../Common";
 import { TServerOptions } from "../parseArgs";
 import { Maze } from "./Maze";
 import { IMaze } from "./Maze.spec";
+import { IRemoteWorker } from "./RemoteWorker.spec";
+import cluster from "cluster";
+import { RemoteIPCWorker } from "./RemoteIPCWorker";
+import { Worker } from "node:cluster";
 
 export function server(options: TServerOptions) {
   let maze: IMaze | null = null;
@@ -49,4 +59,29 @@ export function server(options: TServerOptions) {
     const serverLogger = new ShellLogger("[SERVER]");
     serverLogger.log(`Server listening on port ${options.httpPort}`);
   });
+
+  const remoteWorkers: { [id: string]: IRemoteWorker } = {};
+  cluster.on("online", (worker: Worker) => {
+    const workerID = `IPC:${worker.id}`;
+    const log = new ShellLogger(`[WORKER ${workerID}]`);
+    remoteWorkers[workerID] = new RemoteIPCWorker(log as any, worker as any);
+    remoteWorkers[workerID].listen();
+    remoteWorkers[workerID].subscribe("health", (data) => {
+      const retHealthMessage = messageFromJSON(data) as IResult<
+        IBaseMessage & THealthMessage
+      >;
+      if (retHealthMessage.isFailure) {
+        appLogger.error(retHealthMessage.error!);
+        return;
+      }
+    });
+    worker.on("disconnect", () => delete remoteWorkers[workerID]);
+    appLogger.log(`Remote local worker "${worker.id}" is online`);
+
+    setTimeout(() => {
+      remoteWorkers[workerID].stop();
+    }, 1000);
+  });
+  appLogger.log(`Launch a local worker`);
+  cluster.fork();
 }
