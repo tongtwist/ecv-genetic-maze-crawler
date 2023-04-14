@@ -8,6 +8,10 @@ export class Genome implements IGenome {
         this.genes = genes;
         this.length = genes.length;
     }
+    
+    public getGenes(): TGene[] {
+        return this.genes;
+    }
 
     public delete(idx?: number): void {
         const index = idx || Math.floor(Math.random() * this.length);
@@ -34,6 +38,6 @@ export class Genome implements IGenome {
     }
 
     from(genes: TGene[]): Genome{
-        return new Genome(genes);
+        return new Genome([...genes]);
     }
 }
