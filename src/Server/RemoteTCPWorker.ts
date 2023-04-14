@@ -79,10 +79,19 @@ export class RemoteTCPWorker implements IRemoteWorker {
         `TCP Worker ${this._remoteWorkerLabel} closed: ${hadError}`
       );
     });
+
+    this._socket.on("connect", () => {
+      this._connected = true;
+      this._logger.log(`${this._remoteWorkerLabel} connected`);
+    });
+
     this._socket.on("data", (data) => {
       const dataStr = data.toString();
       const dataJSON = JSON.parse(dataStr);
-      this._messageHandler(dataJSON);
+      const handler = this._messageHandlers[dataJSON.type];
+      if (handler) {
+        handler(dataJSON.data);
+      }
     });
   }
 
@@ -96,9 +105,15 @@ export class RemoteTCPWorker implements IRemoteWorker {
         `Not connected to TCP Worker ${this._remoteWorkerLabel}`
       );
     }
-    return new Promise<boolean>((resolve) => {
-      this._socket?.write(JSON.stringify(data), () => {
-        resolve(true);
+    return new Promise<boolean>((resolve, reject) => {
+      const message = JSON.stringify(data);
+      this._socket.write(message, "utf8", (err) => {
+        if (err) {
+          this._logger.log(`Error sending message: ${err.message}`);
+          resolve(false);
+        } else {
+          resolve(true);
+        }
       });
     });
   }
