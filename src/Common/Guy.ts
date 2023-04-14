@@ -17,6 +17,7 @@ export class Guy implements IGuy {
           };
     }
 
+
      static create(): Guy{
         const genome = Genome.random(100)
         return new Guy(0, genome)
@@ -31,7 +32,7 @@ export class Guy implements IGuy {
 
         const enfantGenome: TGene[] = [
             ...motherGenome.slice(0, motherhalf),
-            ...fatherGenome.slice(fatherhalf)
+            ...fatherGenome.slice(0,fatherhalf)
         ]
         const genome = Genome.from(enfantGenome)
         return new Guy(0, genome)
