@@ -1,25 +1,29 @@
-import { TOptions, TServerOptions, TWorkerOptions } from "./parseArgs";
-import parseArgs from "./parseArgs";
-import cluster from "cluster";
-import { processBehavior, TWorkerConfig } from "./Worker";
+import * as process from "node:process"
+import cluster from "node:cluster"
+import type {IResult} from "./Common"
+import {TOptions, parseArgs, TWorkerOptions} from "./parseArgs"
+import {defaultConfig as defaultWorkerConfig} from "./Worker"
 
 async function main() {
-  const options: TOptions | null = parseArgs(process.argv) as TOptions;
+	const resArgs: IResult<TOptions> = parseArgs(process.argv)
+	if (resArgs.isFailure) {
+		console.error(resArgs.error)
+		process.exit(-1)
+	}
+	const options: TOptions = resArgs.value!
 
-  if (!options && cluster.isPrimary) {
-    console.error(
-      `Unexpected argument(s) : ${process.argv.slice(2).join(" ")}`
-    );
-    process.exit(-1);
-  }
-
-  if ((options as TOptions).mode === "server" && cluster.isPrimary) {
-    let { server } = await require("./Server");
-    server(options as TServerOptions);
-  } else if ((options as TOptions).mode === "worker" || cluster.isWorker) {
-    let { worker } = await require("./Worker");
-    processBehavior(options as any);
-  }
+	if (cluster.isPrimary && options.mode === "server") {
+		const {processBehavior} = await require("./Server")
+		processBehavior(options)
+	} else if (cluster.isWorker || options.mode === "worker") {
+		const {processBehavior} = await require("./Worker")
+		const workerOptions: TWorkerOptions = cluster.isWorker
+			? {mode: "worker", nbThreads: defaultWorkerConfig.nbThreads, serverAddr: "", serverPort: -1}
+			: options as TWorkerOptions
+		processBehavior(workerOptions)
+	} else {
+		console.error("Unable to determine a run mode")
+		process.exit(-1)
+	}
 }
-
-main();
+main()
