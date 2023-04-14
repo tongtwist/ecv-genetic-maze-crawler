@@ -48,6 +48,4 @@ export async function processBehavior(cfg: TWorkerConfig) {
 		appLogger.log("Stopped")
 		process.exit(0)
 	})
-
-	// setInterval(() =>appLogger.log("coucou"), 5000 )
 }
