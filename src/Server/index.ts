@@ -10,7 +10,7 @@ import { IResult, TJSON, messageFromJSON, Logger, IBaseMessage, THealthMessage }
 import type { IRemoteWorker } from "./RemoteWorker.spec"
 import { RemoteIPCWorker } from "./RemoteIPCWorker"
 import { RemoteWorker as RemoteTCPWorker } from "./RemoteTCPWorker"
-import { Maze } from "./Maze"
+import { Maze } from "../Common/Maze"
 
 export type TServerConfig = {
 	readonly httpPort: number
