@@ -21,8 +21,8 @@ import {
 import type { IRemoteWorker } from "./RemoteWorker.spec";
 import { RemoteIPCWorker } from "./RemoteIPCWorker";
 import { RemoteTCPWorker } from "./RemoteTCPWorker";
-import { IMaze } from "./Maze.spec";
-import { Maze } from "./Maze";
+import { IMaze } from "../Common/Maze.spec";
+import { Maze } from "../Common/Maze";
 
 export type TServerConfig = {
   readonly httpPort: number;
