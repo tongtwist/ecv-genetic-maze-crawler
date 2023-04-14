@@ -45,7 +45,6 @@ export class RemoteServer implements IRemoteServer {
         {
           port: this._port,
           host: this._host,
-          timeout,
         },
         () => {
           this._logger.log(
