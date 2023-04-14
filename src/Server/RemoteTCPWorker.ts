@@ -10,20 +10,17 @@ import {
 } from "../Common";
 import type { IRemoteWorker } from "./RemoteWorker.spec";
 import { Socket } from 'node:net';
+import { BaseRemoteWorker } from "./BaseRemoteWorker";
 
-export class RemoteTCPWorker implements IRemoteWorker {
-    private _listening: boolean = false;
-    private _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
-    private _lastHealth?: IBaseMessage & THealthMessage;
-
+export class RemoteTCPWorker extends BaseRemoteWorker implements IRemoteWorker {
+    protected _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
+    
     constructor(
-        private readonly _logger: ILogger,
+        readonly _logger: ILogger,
         private readonly _socket: net.Socket
-    ) { }
-
-    get lastHealth() {
-        return this._lastHealth;
-    }
+    ) {
+        super(_logger);
+     }
 
     private _messageHandler(data: TJSON) {
         const retMessage = messageFromJSON(data);
@@ -38,10 +35,6 @@ export class RemoteTCPWorker implements IRemoteWorker {
         } else {
             this._logger.err(retMessage.error!.message);
         }
-    }
-
-    setHealth(v: IBaseMessage & THealthMessage): void {
-        this._lastHealth = v;
     }
 
     listen() {
@@ -83,13 +76,5 @@ export class RemoteTCPWorker implements IRemoteWorker {
                 resolve(true);
             });
         });
-    }
-
-    subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
-        if (!this._listening) {
-            return false;
-        }
-        this._messageHandlers[type] = handler;
-        return true;
     }
 }

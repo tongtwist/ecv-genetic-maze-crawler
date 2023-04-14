@@ -1,4 +1,4 @@
-import type {TMazeJson, IMaze} from "../Maze.spec"
+import type {TMazeJson, IMaze} from "../../Server/Maze.spec"
 import type {ICell} from "./Cell.spec"
 import {Cell} from "./Cell"
 
