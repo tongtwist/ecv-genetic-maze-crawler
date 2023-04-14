@@ -8,7 +8,7 @@ export class Genome implements IGenome {
         this.genes = genes;
         this.length = genes.length;
     }
-    
+
     public getGenes(): TGene[] {
         return this.genes;
     }
@@ -29,12 +29,12 @@ export class Genome implements IGenome {
         this.genes[index] = Math.floor(Math.random() * 4) as TGene;
     }
 
-    random(length: number){
-        this.genes = [];
+    public static random(length: number){
+        const genes: TGene[] = [];
         for (let i = 0; i < length; i++) {
-            this.genes.push(Math.floor(Math.random() * 4) as TGene);
+            genes.push(Math.floor(Math.random() * 4) as TGene);
         }
-        return new Genome(this.genes);
+        return new Genome([...genes]);
     }
 
     from(genes: TGene[]): Genome{

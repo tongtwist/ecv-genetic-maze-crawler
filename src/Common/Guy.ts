@@ -71,11 +71,7 @@ export class Guy implements IGuy {
     }
 
     public create(maze:IMaze){
-        const genes: TGene[] = [];
-        for (let i = 0; i < 100; i++) {
-            genes.push(Math.floor(Math.random() * 4) as TGene);
-        }
-        const genome = new Genome(genes);
+        const genome = Genome.random(100);
         return new Guy(genome);
     }
 
