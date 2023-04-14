@@ -20,6 +20,7 @@ export class Guy implements IGuy {
     const wallHits = 0;
     const backtracks = 0;
     const targerReached = false;
+    return { steps, wallHits, backtracks, targerReached };
   }
 
   public mutate(rate: number): void {
