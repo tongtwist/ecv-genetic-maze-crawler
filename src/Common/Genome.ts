@@ -12,9 +12,9 @@ export class Genome implements IGenome{
         return j;
     }
     static random(oui : number) {
-        var array_content : Array<TGene> = []
+        var array_content = []
         for (let i = 0; i < oui; i++) {
-            array_content[i] = (Math.floor(Math.random() * 4)) ;
+            array_content[i] = Math.floor(Math.random() * 4) ;
             
         }
         return array_content
