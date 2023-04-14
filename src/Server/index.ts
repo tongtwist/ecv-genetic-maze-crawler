@@ -5,7 +5,7 @@ import cluster, {Worker} from "node:cluster"
 import {Socket, createServer} from "node:net"
 import express from "express"
 import { DisconnectReason, Server as SocketIOServer, Socket as SocketIO } from "socket.io"
-import type { IMaze } from "./Maze.spec"
+import type { IMaze } from "../Common/Maze.spec"
 import { Maze } from "../Common/Maze"
 
 import { IResult, TJSON, messageFromJSON, Logger, IBaseMessage, THealthMessage } from "../Common"

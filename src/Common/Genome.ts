@@ -13,21 +13,23 @@ export class Genome implements IGenome{
     }
     static random(oui : number) {
         var array_content : Array<TGene> = []
-        var test_array : Array<number> = []
-        for (let i = oui; i < test_array.length; i++) {
-            test_array.push(Math.floor(Math.random() * 4)) ;
+        for (let i = 0; i < oui; i++) {
+            array_content[i] = (Math.floor(Math.random() * 4)) ;
             
         }
         return array_content
     }
 
     swap(idx?: number | undefined): void {
+        const id = idx
         throw new Error("Method not implemented.");
     }
     insert(idx?: number | undefined): void {
+        const id = idx
         throw new Error("Method not implemented.");
     }
     delete(idx?: number | undefined): void {
+        const id = idx
         throw new Error("Method not implemented.");
     }
     

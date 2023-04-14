@@ -1,4 +1,4 @@
-import type {TCellJSON, ICell} from "../Common/Maze/Cell.spec"
+import type {TCellJSON, ICell} from "./Maze/Cell.spec"
 
 export type TMazeJson = {
 	readonly c: number
