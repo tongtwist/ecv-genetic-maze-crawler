@@ -1,24 +1,34 @@
-import { Socket, createConnection } from "net";
-import { TJSON, TMessageType, messageFromJSON, ILogger } from "../Common";
-import type { IRemoteServer } from "./RemoteServer.spec";
+import {
+  IBaseMessage,
+  ILogger,
+  THealthMessage,
+  TJSON,
+  TMessageType,
+  messageFromJSON,
+} from "../Common";
+import { IRemoteWorker } from "./RemoteWorker.spec";
+import { AddressInfo, Socket } from "net";
 
-export class RemoteServer implements IRemoteServer {
-  private _socket?: Socket;
+export class RemoteTCPWorker implements IRemoteWorker {
+  private readonly _adr: AddressInfo | {};
+  private readonly _remoteWorkerLabel: string;
   private _connected: boolean = false;
   private _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
+  private _lastHealth?: IBaseMessage & THealthMessage;
 
-  constructor(
-    private readonly _logger: ILogger,
-    private readonly _host: string,
-    private readonly _port: number
-  ) {}
-
+  constructor(readonly _logger: ILogger, private _socket: Socket) {
+    this._adr = this._socket.address();
+    this._remoteWorkerLabel = `TCP Worker ${this._adrToString()}`;
+  }
+  private _adrToString(): string {
+    return "family" in this._adr
+      ? `${this._adr.family}://${this._adr.address}:${this._adr.port}`
+      : "";
+  }
   private _cleanState() {
     this._connected = false;
     this._messageHandlers = {};
-    this._socket = undefined;
   }
-
   private _messageHandler(data: TJSON) {
     const retMessage = messageFromJSON(data);
     if (retMessage.isSuccess) {
@@ -33,80 +43,60 @@ export class RemoteServer implements IRemoteServer {
       this._logger.log(retMessage.error!.message);
     }
   }
+  setHealth(v: IBaseMessage & THealthMessage): void {
+    this._lastHealth = v;
+  }
 
-  connect(): Promise<boolean> {
+  listen(): Promise<boolean> {
     if (this._connected && !!this._socket) {
       return Promise.resolve(true);
     }
     this._cleanState();
     return new Promise((resolve: (v: boolean) => void) => {
       const timeout = 5000;
-      this._socket = createConnection(
-        {
-          port: this._port,
-          host: this._host,
-          timeout,
-        },
-        () => {
-          this._logger.log(
-            `TCP connection established with ${this._host}:${this._port}`
-          );
-        }
-      );
       this._socket.on("close", () => {
-        this._logger.log(`Disconnected from ${this._host}:${this._port}`);
+        this._logger.log(`Disconnected from ${this._remoteWorkerLabel}`);
         this._cleanState();
       });
-      this._socket.on("ready", () => {
-        this._logger.log(`Ready to work with ${this._host}:${this._port}`);
+      this._socket.on("connect", () => {
+        this._logger.log(`Ready to work with ${this._remoteWorkerLabel}`);
         this._connected = true;
         resolve(true);
       });
       this._socket.on("error", (err: Error) => {
         this._logger.log(
-          `TCP socket to ${this._host}:${this._port} emitted an error(${err.name}): ${err.message}`
-        );
-        this._cleanState();
-      });
-      this._socket.on("timeout", () => {
-        this._logger.log(
-          `Connection timeout. It takes more than ${timeout}ms to connect to ${this._host}:${this._port}`
+          `Error when connecting to ${this._remoteWorkerLabel}: ${err}`
         );
         this._cleanState();
       });
       this._socket.on("data", (data: Buffer) => {
-        const txt = data.toString();
-        this._logger.log(
-          `Received ${data.length} bytes from ${this._host}:${this._port} ("${txt}")`
-        );
-        let j: TJSON | undefined;
         try {
-          j = JSON.parse(txt);
-        } catch (e) {
+          const json = JSON.parse(data.toString());
+          this._messageHandler(json);
+        } catch (err) {
           this._logger.log(
-            `The received data is not a valid JSON and cannot be processed: ${e}`
+            `Error when parsing data from ${this._remoteWorkerLabel}: ${err}`
           );
         }
-        if (typeof j !== undefined) {
-          this._messageHandler(j!);
-        }
+      });
+      this._socket.on("timeout", () => {
+        this._logger.log(
+          `Connection timeout. It takes more than ${timeout}ms to connect`
+        );
+        this._cleanState();
       });
     });
   }
 
-  close() {
-    this._socket && this._socket.end();
-  }
-
   send(data: TJSON): Promise<boolean> {
-    if (!this._connected || !this._socket) {
+    if (!this._socket) {
       this._cleanState();
       return Promise.resolve(false);
     }
     return new Promise((resolve: (v: boolean) => void) => {
       this._socket!.write(JSON.stringify(data), "utf8", (err?: Error) => {
         if (err) {
-          this._logger.log(`Error when emitting data to the server: ${err}`);
+          this._logger.log(`Error when emitting data to the Worker: ${err}`);
           resolve(false);
         } else {
           resolve(true);
@@ -114,7 +104,9 @@ export class RemoteServer implements IRemoteServer {
       });
     });
   }
-
+  stop(): void {
+    this._socket && this._socket.end();
+  }
   subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
     if (!this._connected || !this._socket) {
       this._cleanState();
