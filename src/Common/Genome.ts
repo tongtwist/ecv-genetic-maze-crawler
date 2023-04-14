@@ -4,12 +4,13 @@ export class Genome implements IGenome {
   public length!: number;
   public genes!: TGene[];
 
-  private constructor() {
-    this.genes = [];
+  private constructor(genes: TGene[], length: number) {
+    this.genes = genes;
+    this.length = length;
   }
 
   public static random(length: number): Genome {
-    const g = new this();
+    const g = new this([], length);
     g.length = length;
 
     for (let i = 0; i <= length; i++) {
@@ -20,9 +21,7 @@ export class Genome implements IGenome {
   }
 
   public static from(genes: TGene[]): Genome {
-    const g = new this();
-    g.genes = genes;
-    return g;
+    return new Genome([...genes], genes.length);
   }
 
   swap(idx: number): void {
