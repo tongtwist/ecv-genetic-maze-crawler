@@ -1,5 +1,5 @@
-import { IResult } from "./Result.spec";
 import { EOL } from "os";
+import type { IResult } from "./Result.spec";
 
 export class Result<R = unknown> implements IResult<R> {
   private readonly _error?: Error;
@@ -11,7 +11,7 @@ export class Result<R = unknown> implements IResult<R> {
     if (this._ok) {
       this._value = value!;
     } else {
-      this._error = typeof error === "string" ? new Error(error) : error;
+      this._error = typeof error === "string" ? new Error(error) : error!;
     }
     Object.freeze(this);
   }
@@ -22,24 +22,22 @@ export class Result<R = unknown> implements IResult<R> {
   get value(): R | undefined {
     return this._value;
   }
-  get isSucess(): boolean {
+  get isSuccess(): boolean {
     return this._ok;
   }
   get isFailure(): boolean {
     return !this._ok;
   }
 
-  static success<R = unknown>(value?: R): Result<R> {
+  static success<R = unknown>(value: R): IResult<R> {
     return new Result<R>(value);
   }
-
-  static failure<R = unknown>(error?: Error | string): Result<R> {
+  static failure<R = unknown>(error: string | Error): IResult<R> {
     return new Result<R>(undefined, error);
   }
-
   static failureIn<R = unknown>(
     functionName: string,
-    error: Error | string
+    error: string | Error
   ): IResult<R> {
     return Result.failure(
       `Error in ${functionName}(),${EOL} -> ${

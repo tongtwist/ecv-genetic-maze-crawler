@@ -1,14 +1,15 @@
 import { z } from "zod";
-import { IBaseMessage } from "./Message.spec";
-import {
-  THealthMessage,
+import type { IResult } from "../Result.spec";
+import type { TJSON, TJSONObject } from "../JSON.spec";
+import type { IBaseMessage } from "../Message.spec";
+import type {
   THealthMessageType,
-  TLongCPUMessage,
   TShortCPUMessage,
+  TLongCPUMessage,
+  THealthMessage,
 } from "./HealthMessage.spec";
-import { IResult } from "../Result.spec";
-import { TJSON, TJSONObject } from "../JSON.spec";
 import { Result } from "../Result";
+
 export class HealthMessage implements IBaseMessage, THealthMessage {
   static readonly type: THealthMessageType = "health";
   private static _shortCPUSchema = z.object({
@@ -22,11 +23,6 @@ export class HealthMessage implements IBaseMessage, THealthMessage {
   private static _longCPUSchema = HealthMessage._shortCPUSchema.extend({
     model: z.string(),
   });
-  private static _cpuSchema = z.union([
-    HealthMessage._shortCPUSchema,
-    HealthMessage._longCPUSchema,
-  ]);
-
   static readonly schema = z.object({
     type: z.literal(HealthMessage.type),
     timestamp: z.number().nonnegative(),
@@ -35,7 +31,7 @@ export class HealthMessage implements IBaseMessage, THealthMessage {
       z.array(HealthMessage._shortCPUSchema),
       z.array(HealthMessage._longCPUSchema),
     ]),
-    freeMem: z.number().nonnegative(),
+    freeMem: z.number().int().nonnegative(),
     uptime: z.number().positive(),
     hostname: z.string().optional(),
     machine: z.string().optional(),
@@ -47,18 +43,18 @@ export class HealthMessage implements IBaseMessage, THealthMessage {
   });
 
   constructor(
-    public readonly _timestamp: number,
-    public readonly _loadAvg: number[],
-    public readonly _cpus: TShortCPUMessage[] | TLongCPUMessage[],
-    public readonly _freeMem: number,
-    public readonly _uptime: number,
-    public readonly _hostname?: string,
-    public readonly _machine?: string,
-    public readonly _platform?: string,
-    public readonly _release?: string,
-    public readonly _totalMem?: number,
-    public readonly _version?: string,
-    public readonly _architecture?: string
+    private readonly _timestamp: number,
+    private readonly _loadAvg: number[],
+    private readonly _cpus: TShortCPUMessage[] | TLongCPUMessage[],
+    private readonly _freeMem: number,
+    private readonly _uptime: number,
+    private readonly _hostname?: string,
+    private readonly _machine?: string,
+    private readonly _platform?: string,
+    private readonly _release?: string,
+    private readonly _totalMem?: number,
+    private readonly _version?: string,
+    private readonly _architecture?: string
   ) {
     Object.freeze(this);
   }
@@ -107,7 +103,7 @@ export class HealthMessage implements IBaseMessage, THealthMessage {
     const retZod = HealthMessage.schema.safeParse(j);
     return retZod.success
       ? Result.success(j as THealthMessage)
-      : Result.failureIn("HealthMessage.parse()", retZod.error);
+      : Result.failureIn("HealthMessage.parse", retZod.error);
   }
 
   toJSON(): TJSONObject {
@@ -115,7 +111,6 @@ export class HealthMessage implements IBaseMessage, THealthMessage {
       type: HealthMessage.type,
       timestamp: this._timestamp,
       loadAvg: this.loadAvg,
-
       cpus: this.cpus,
       freeMem: this._freeMem,
       uptime: this._uptime,
@@ -144,7 +139,7 @@ export class HealthMessage implements IBaseMessage, THealthMessage {
     return ret;
   }
 
-  static fromJSON(j: TJSONObject): IResult<THealthMessage & THealthMessage> {
+  static fromJSON(j: TJSON): IResult<IBaseMessage & THealthMessage> {
     const parsingRet = HealthMessage.parse(j);
     if (parsingRet.isSuccess) {
       const msg = new HealthMessage(
@@ -163,6 +158,6 @@ export class HealthMessage implements IBaseMessage, THealthMessage {
       );
       return Result.success(msg);
     }
-    return Result.failureIn("HealthMessage.fromJSON()", parsingRet.error!);
+    return Result.failureIn("HealthMessage.fromJSON", parsingRet.error!);
   }
 }
