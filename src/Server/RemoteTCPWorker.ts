@@ -1,4 +1,4 @@
-import { createServer, Socket } from "net"
+import { Socket } from "node:net"
 import {
     TJSON,
     TMessageType,
@@ -14,12 +14,11 @@ export class RemoteTCPWorker implements IRemoteWorker {
     private _listening: boolean = false;
     private _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
     private _lastHealth?: IBaseMessage & THealthMessage;
-    private _socket?: Socket;
 
     constructor(
-        readonly _logger: ILogger,
-        private readonly _port: number
-    ) { }
+        private readonly _logger: ILogger,
+        private readonly _socket: Socket
+    ) {}
 
     get lastHealth() {
         return this._lastHealth;
@@ -46,27 +45,9 @@ export class RemoteTCPWorker implements IRemoteWorker {
       }
 
     listen() {
-        const server = createServer((socket) => {
-            this._socket = socket;
-
-            socket.on("data", (data) => {
-                try {
-                    const jsonData = JSON.parse(data.toString());
-                    this._messageHandler(jsonData);
-                } catch (err) {
-                    this._logger.err("Invalid data received.");
-                }
-            });
-
-            socket.on("close", () => {
-                this._logger.log(`TCP Worker disconnected`);
-            });
-        });
-
-        server.listen(this._port, () => {
-            this._listening = true;
-            this._logger.log(`Listening TCP Worker on port ${this._port} ...`);
-        });
+        this._socket!.on("data", this._messageHandler.bind(this));
+        this._listening = true;
+        this._logger.log(`Listening TCP Worker ...`);
     }
 
     stop() {
