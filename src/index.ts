@@ -1,7 +1,7 @@
 import * as process from "node:process"
 import cluster from "node:cluster"
 import type {IResult} from "./Common"
-import {TOptions, parseArgs, TWorkerOptions} from "./parseArgs"
+import {TOptions, parseArgs, TWorkerOptions} from "./ParseArgs"
 import {defaultConfig as defaultWorkerConfig} from "./Worker"
 
 async function main() {
