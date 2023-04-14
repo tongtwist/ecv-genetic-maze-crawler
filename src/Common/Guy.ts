@@ -11,6 +11,46 @@ export class Guy implements IGuy {
         this.age = 0;
         this.genome = genome;
     }
+    public muatate(rate: number): void {
+        if (Math.random() < rate) {
+            const gene = Math.floor(Math.random() * 3);
+            switch (gene) {
+                case 0:
+                    this.genome.swap();
+                    break;
+                case 1:
+                    this.genome.insert();
+                    break;
+                case 2:
+                    this.genome.delete();
+                    break;
+            }
+        }
+    }
+
+    public vieillir(): void {
+        this.age++;
+    }
+
+    public create(maze:IMaze){
+        const genome = Genome.random(maze.nbCols + maze.nbRows);
+        return new Guy(genome);
+    }
+
+    public birth(maze:IMaze, mother:IGuy, father: IGuy){
+        const genes: TGene[] = [];
+        const nbGenes = maze.nbCols + maze.nbRows;
+        for (let i = 0; i < nbGenes; i++) {
+            const gene = Math.floor(Math.random() * 2);
+            if (gene === 0){
+                genes.push(mother.genome.genes[i]);
+            } else {
+                genes.push(father.genome.genes[i]);
+            }
+        }
+        const genome = new Genome(genes);
+        return new Guy(genome);
+    }
 
     public walk(target: Position): Walk {
         let x = 0;
@@ -47,45 +87,5 @@ export class Guy implements IGuy {
             steps++;
         }
         return {steps, wallHits, backtracks, targetReached};
-    }
-
-    public muatate(rate: number): void {
-        if (Math.random() < rate) {
-            const gene = Math.floor(Math.random() * 3);
-            switch (gene) {
-                case 0:
-                    this.genome.swap();
-                    break;
-                case 1:
-                    this.genome.insert();
-                    break;
-                case 2:
-                    this.genome.delete();
-                    break;
-            }
-        }
-    }
-
-    public vieillir(): void {
-        this.age++;
-    }
-
-    public create(maze:IMaze){
-        const genome = Genome.random(100);
-        return new Guy(genome);
-    }
-
-    public birth(maze:IMaze, mother:IGuy, father: IGuy){
-        const genes: TGene[] = [];
-        for (let i = 0; i < 100; i++) {
-            const gene = Math.floor(Math.random() * 2);
-            if (gene === 0){
-                genes.push(mother.genome.genes[i]);
-            } else {
-                genes.push(father.genome.genes[i]);
-            }
-        }
-        const genome = new Genome(genes);
-        return new Guy(genome);
     }
 }
