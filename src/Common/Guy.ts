@@ -6,10 +6,11 @@ import {Genome} from "./Genome";
 export class Guy implements IGuy {
     age: number;
     genome: IGenome;
-
-    constructor(genome: IGenome) {
+    public readonly maze: IMaze;
+    constructor(genome: IGenome, maze: IMaze) {
         this.age = 0;
         this.genome = genome;
+        this.maze = maze;
     }
     public muatate(rate: number): void {
         if (Math.random() < rate) {
@@ -34,7 +35,7 @@ export class Guy implements IGuy {
 
     public create(maze:IMaze){
         const genome = Genome.random(maze.nbCols + maze.nbRows);
-        return new Guy(genome);
+        return new Guy(genome, maze);
     }
 
     public birth(maze:IMaze, mother:IGuy, father: IGuy){
@@ -49,43 +50,77 @@ export class Guy implements IGuy {
             }
         }
         const genome = new Genome(genes);
-        return new Guy(genome);
+        return new Guy(genome, maze);
     }
 
-    public walk(target: Position): Walk {
+    walk(target: Position): Walk {
         let x = 0;
         let y = 0;
         let steps = 0;
         let wallHits = 0;
         let backtracks = 0;
         let targetReached = false;
-        while (x !== target.x || y !== target.y) {
-            const gene = this.genome.genes[steps % this.genome.length];
-            switch (gene) {
-                case 0:
-                    x++;
-                    break;
-                case 1:
-                    y++;
-                    break;
-                case 2:
-                    x--;
-                    break;
-                case 3:
-                    y--;
-                    break;
-            }
-            if (x < 0 || y < 0) {
-                wallHits++;
-            }
-            if (x > target.x || y > target.y) {
-                backtracks++;
-            }
-            if (x === target.x && y === target.y) {
-                targetReached = true;
-            }
-            steps++;
-        }
+
         return {steps, wallHits, backtracks, targetReached};
     }
+
+        /*public getNextGene(): void {
+            this.currentGeneIndex++;
+            if (this.currentGeneIndex === this.genes.length) {
+                this.currentGeneIndex = 0;
+            }
+        }*/
+
+   /* public walk(target: Position): Walk {
+        let x = 0;
+        let y = 0;
+        let steps = 0;
+        let wallHits = 0;
+        let backtracks = 0;
+        let targetReached = false;
+
+        const guy = this.create(this.maze);
+        let currentGuy = guy;
+        let previousGene = -1;
+        while (!targetReached) {
+            const currentPos = { x: x, y: y };
+            const direction = currentGuy.genome.getNextGene(previousGene);
+
+            if (direction === 0) {
+                y--;
+            } else if (direction === 1) {
+                x--;
+            } else if (direction === 2) {
+                x++;
+            } else if (direction === 3) {
+                y++;
+            }
+
+
+            if (this.maze.isWall(x, y)) {
+                wallHits++;
+                x = currentPos.x;
+                y = currentPos.y;
+                currentGuy.genome.getNextGene(previousGene);
+                previousGene = direction;
+            } else if (x === target.x && y === target.y) {
+               targetReached = true;
+            } else {
+                 const child = this.birth(this.maze, currentGuy, guy);
+                currentGuy = child;
+                previousGene = direction;
+            }
+
+            steps++;
+        }
+
+        return {
+            steps: steps,
+            wallHits: wallHits,
+            backtracks: backtracks,
+            targetReached: targetReached
+        };
+    }*/
+
+
 }
