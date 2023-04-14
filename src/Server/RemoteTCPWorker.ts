@@ -8,13 +8,11 @@ export class RemoteTCPWorker implements IRemoteWorker {
     private _listening: boolean = false
     private _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
     private _lastHealth?: IBaseMessage & THealthMessage;
+    private readonly _remoteWorkerLabel: string
 
 	constructor(
 		private readonly _logger: ILogger,
-		private readonly _host: string,
-        private readonly _remoteWorkerLabel: string,
-		private readonly _port: number,
-        private readonly _socket: Socket
+    private readonly _socket: Socket
 
 	) {
         this._adr = this._socket.address()
@@ -31,7 +29,8 @@ export class RemoteTCPWorker implements IRemoteWorker {
         return this._lastHealth;
   }
 
-  private _bufferHandler(data: TJSON): void {
+  private _bufferHandler(buf: Buffer): void {
+        const data = JSON.parse(buf.toString());
         const retMessage = messageFromJSON(data);
         if (retMessage.isSuccess) {
           const message = retMessage.value!;
@@ -51,23 +50,10 @@ export class RemoteTCPWorker implements IRemoteWorker {
   }
 
   listen() {
-		this._socket.on("message", this._bufferHandler.bind(this))
+		this._socket.on("data", this._bufferHandler.bind(this))
 		this._listening = true
 		this._logger.log(`Listening TCP Worker ${this._adrToString()} ...`)
 	}
-
-  stop(): void {
-        this._messageHandlers = {};
-        this._listening = false;
-        this._logger.log(`Stop to listen TCP Worker`);
-        const msg = new StopMessage();
-        this.send(msg.toJSON());
-    
-        if (this._socket) {
-          this._socket.end();
-        }
-  }
-
 	send(data: TJSON): Promise<boolean> {
 		if (!this._connected || !this._socket) {
 			return Promise.resolve(false)
@@ -84,12 +70,23 @@ export class RemoteTCPWorker implements IRemoteWorker {
 		})
 	}
 
-  subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
-        if (!this._listening) {
-          return false;
-        }
-        this._messageHandlers[type] = handler;
-        return true;
+  stop(): void {
+    this._messageHandlers = {};
+    this._listening = false;
+    this._logger.log(`Stop to listen TCP Worker`);
+    const msg = new StopMessage();
+    this.send(msg.toJSON());
+
+    if (this._socket) {
+      this._socket.end();
+    }
+}
+subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
+  if (!this._listening) {
+    return false;
   }
+  this._messageHandlers[type] = handler;
+  return true;
+}
 
 }
