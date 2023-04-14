@@ -15,11 +15,11 @@ export class RemoteTCPWorker implements IRemoteWorker {
   private _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
   private _lastHealth?: IBaseMessage & THealthMessage;
 
-  private _socket?: Socket;
+  // private _socket?: Socket;
 
   constructor(
     private readonly _logger: ILogger,
-    private readonly _port: number
+    private readonly _socket: Socket
   ) {}
 
   get lastHealth() {
@@ -46,36 +46,43 @@ export class RemoteTCPWorker implements IRemoteWorker {
   }
 
   listen(): void {
-    const server = createServer(
-      {
-        noDelay: true,
-        keepAlive: true,
-        keepAliveInitialDelay: 1000,
-      },
-      (socket) => {
-        this._socket = socket;
+    // const server = createServer(
+    //   {
+    //     noDelay: true,
+    //     keepAlive: true,
+    //     keepAliveInitialDelay: 1000,
+    //   },
+    //   (socket) => {
+    //     this._socket = socket;
+    //     const workerID = `TCP://${socket.remoteAddress}:${socket.remotePort}`;
 
-        socket.on("data", (data) => {
-          try {
-            const jsonData = JSON.parse(data.toString());
-            this._messageHandler(jsonData);
-          } catch (err) {
-            this._logger.err("Problem when received data");
-          }
-        });
+    //     socket.on("data", (data) => {
+    //       try {
+    //         const jsonData = JSON.parse(data.toString());
+    //         this._messageHandler(jsonData);
+    //       } catch (err) {
+    //         this._logger.err("Problem when received data");
+    //       }
+    //     });
 
-        socket.write("Hello from TCP Worker");
+    //     socket.write("Hello from TCP Worker");
 
-        socket.on("close", () => {
-          this._logger.log(`TCP Worker is now disconnected`);
-        });
-      }
-    );
+    //     socket.on("close", () => {
+    //       this._logger.log(`TCP Worker is now disconnected`);
+    //     });
+    //   }
+    // );
 
-    server.listen(this._port, () => {
-      this._listening = true;
-      this._logger.log(`Listening TCP Worker on port ${this._port}`);
-    });
+    // server.listen(this._port, () => {
+    //   this._listening = true;
+    //   this._logger.log(`Listening TCP Worker on port ${this._port}`);
+    // });
+
+    // Méthode du professeur et appel depuis index.ts
+
+    this._socket!.on("data", this._messageHandler.bind(this));
+    this._listening = true;
+    this._logger.log(`Listening TCP Worker ...`);
   }
 
   stop(): void {

@@ -22,6 +22,7 @@ import {
 import type { IRemoteWorker } from "./RemoteWorker.spec";
 import { RemoteIPCWorker } from "./RemoteIPCWorker";
 import { RemoteTCPWorker } from "./RemoteTCPWorker";
+import { Socket, createServer } from "node:net";
 
 export type TServerConfig = {
   readonly httpPort: number;
@@ -80,30 +81,34 @@ export function processBehavior(cfg: TServerConfig) {
     appLogger.log(`HTTP service listening on port ${cfg.httpPort}...`)
   );
 
-  // const serverTCPSocket = new RemoteTCPWorker();
-  // const serverTCPSocket = new RemoteTCPWorker(
-
-  // );
-  // createServer({
-  // 	noDelay: true,
-  // 	keepAlive: true,
-  // 	keepAliveInitialDelay: 1000,
-  // }, (socket: Socket) => {
-  // 	const workerID = `TCP://${socket.remoteAddress}:${socket.remotePort}`
-  // 	appLogger.log(`Remote local worker "${workerID}" is online`)
-  // 	remoteWorkers[workerID] = new RemoteTCPWorker(Logger.create(`(from ${workerID}) `), socket)
-  // 	remoteWorkers[workerID].listen()
-  // 	remoteWorkers[workerID].subscribe("health", (data: TJSON) => {
-  // 		const retHealthMessage = messageFromJSON(data) as IResult<IBaseMessage & THealthMessage>
-  // 		if (retHealthMessage.isFailure) {
-  // 			appLogger.err(retHealthMessage.error!.message)
-  // 			return
-  // 		}
-  // 		remoteWorkers[workerID].setHealth(retHealthMessage.value!)
-  // 		appLogger.log(`Remote worker "${workerID}" is healthy`)
-  // 	})
-  // 	socket.on("close", () => delete remoteWorkers[workerID])
-  // })
+  createServer(
+    {
+      noDelay: true,
+      keepAlive: true,
+      keepAliveInitialDelay: 1000,
+    },
+    (socket: Socket) => {
+      const workerID = `TCP://${socket.remoteAddress}:${socket.remotePort}`;
+      appLogger.log(`Remote local worker "${workerID}" is online`);
+      remoteWorkers[workerID] = new RemoteTCPWorker(
+        Logger.create(`(from ${workerID}) `),
+        socket
+      );
+      remoteWorkers[workerID].listen();
+      remoteWorkers[workerID].subscribe("health", (data: TJSON) => {
+        const retHealthMessage = messageFromJSON(data) as IResult<
+          IBaseMessage & THealthMessage
+        >;
+        if (retHealthMessage.isFailure) {
+          appLogger.err(retHealthMessage.error!.message);
+          return;
+        }
+        remoteWorkers[workerID].setHealth(retHealthMessage.value!);
+        appLogger.log(`Remote worker "${workerID}" is healthy`);
+      });
+      socket.on("close", () => delete remoteWorkers[workerID]);
+    }
+  );
 
   const remoteWorkers: { [id: string]: IRemoteWorker } = {};
   cluster.on("online", (worker: Worker) => {
