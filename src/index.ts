@@ -1,59 +1,29 @@
-'use strict';
-var action = getParam(process.argv[2],process.argv[3],parseInt(process.argv[4]))
-if (typeof action == "object") {
-    console.log(action);
-}
+import * as process from "node:process"
+import cluster from "node:cluster"
+import type {IResult} from "./Common"
+import {TOptions, parseArgs, TWorkerOptions} from "./parseArgs"
+import {defaultConfig as defaultWorkerConfig} from "./Worker"
 
-function getParam(mode:string, arg1:string, arg2:number, primary:number = 0) {
-    console.log('------------------------');
-    var thisMode = mode
-    if (primary != 0) {
-        thisMode = "worker"
-        if (arg2 == 0) {
-            arg2 = 1
-        }
-    }
-    console.log('je suis mode : ', thisMode);
-    
-    if (isNaN(arg2) == true || arg1 == "undefined"){
-        console.log('argument manquant OU invalide');
-        return ;
-    };
-    if (thisMode === 'server') {
-        console.log("run in server");
-        console.log(arg1, arg2);
-        
-        var http_port = parseInt(arg1)
-        var tcp_port = arg2
-        
-        if(isNaN(http_port) == true || http_port < 0 || tcp_port < 0 ){
-            console.log('Valeur negative');
-            return ; 
-        }
-        
-        var worker:any = getParam("", "localhost:"+http_port, 0, 1)
-        
-        return {
-        'server' : 
-            {
-            'http_port' : http_port, 
-            'tcp_port'  : tcp_port
-            },
-        worker
-        }
-        
-// port max : 65535 port min : 5000 
-// os -> CPU 
-    }else{
-        console.log("run in worker");
-        console.log(arg1, arg2);
-        
-        var local = arg1
-        var nbThread = arg2
+async function main() {
+	const resArgs: IResult<TOptions> = parseArgs(process.argv)
+	if (resArgs.isFailure) {
+		console.error(resArgs.error)
+		process.exit(-1)
+	}
+	const options: TOptions = resArgs.value!
 
-        return {
-            'localhost' : local,
-            'nbThread'  : nbThread 
-        }
-    }   
+	if (cluster.isPrimary && options.mode === "server") {
+		const {processBehavior} = await require("./Server")
+		processBehavior(options)
+	} else if (cluster.isWorker || options.mode === "worker") {
+		const {processBehavior} = await require("./Worker")
+		const workerOptions: TWorkerOptions = cluster.isWorker
+			? {mode: "worker", nbThreads: defaultWorkerConfig.nbThreads, serverAddr: "", serverPort: -1}
+			: options as TWorkerOptions
+		processBehavior(workerOptions)
+	} else {
+		console.error("Unable to determine a run mode")
+		process.exit(-1)
+	}
 }
+main()
