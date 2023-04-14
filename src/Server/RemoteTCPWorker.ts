@@ -21,17 +21,17 @@ export class RemoteTCPWorker implements IRemoteWorker {
         this._remoteWorkerLabel = `TCP Worker ${this._adrToString()}`
     }
 
-    private _adrToString(): string {
+  private _adrToString(): string {
         return "family" in this._adr
             ? `${this._adr.family}://${this._adr.address}:${this._adr.port}`
             : ""
-    }
+  }
 
-      get lastHealth() {
+  get lastHealth() {
         return this._lastHealth;
-      }
+  }
 
-    private _bufferHandler(data: TJSON): void {
+  private _bufferHandler(data: TJSON): void {
         const retMessage = messageFromJSON(data);
         if (retMessage.isSuccess) {
           const message = retMessage.value!;
@@ -44,19 +44,19 @@ export class RemoteTCPWorker implements IRemoteWorker {
         } else {
           this._logger.err(retMessage.error!.message);
         }
-      }
+  }
 
-      setHealth(v: IBaseMessage & THealthMessage): void {
+  setHealth(v: IBaseMessage & THealthMessage): void {
         this._lastHealth = v;
-      }
+  }
 
-    listen() {
+  listen() {
 		this._socket.on("message", this._bufferHandler.bind(this))
 		this._listening = true
 		this._logger.log(`Listening TCP Worker ${this._adrToString()} ...`)
 	}
 
-    stop(): void {
+  stop(): void {
         this._messageHandlers = {};
         this._listening = false;
         this._logger.log(`Stop to listen TCP Worker`);
@@ -66,7 +66,7 @@ export class RemoteTCPWorker implements IRemoteWorker {
         if (this._socket) {
           this._socket.end();
         }
-    }
+  }
 
 	send(data: TJSON): Promise<boolean> {
 		if (!this._connected || !this._socket) {
@@ -84,13 +84,12 @@ export class RemoteTCPWorker implements IRemoteWorker {
 		})
 	}
 
-    subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
+  subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
         if (!this._listening) {
           return false;
         }
-    
         this._messageHandlers[type] = handler;
         return true;
-    }
+  }
 
 }
