@@ -1,8 +1,10 @@
 import {
   IBaseMessage,
   ILogger,
+  IResult,
   THealthMessage,
   TJSON,
+  TMessage,
   TMessageType,
   messageFromJSON,
 } from "../Common";

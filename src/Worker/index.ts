@@ -60,8 +60,8 @@ export async function processBehavior(cfg: TWorkerConfig) {
     process.exit(0);
   });
 
-  setInterval(
+  /*setInterval(
     () => appLogger.log("Hello from " + healthEmitter.getHostname()),
     5000
-  );
+  );*/
 }

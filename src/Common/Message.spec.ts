@@ -11,6 +11,7 @@ export type TMessageType = THealthMessageType | TStopMessageType;
 export interface IBaseMessage {
   readonly type: TMessageType;
   toJSON(): TJSON;
+  readonly hostname?: string;
 }
 
 export type TMessage = THealthMessage | TStopMessage;
