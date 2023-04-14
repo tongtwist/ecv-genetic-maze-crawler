@@ -9,6 +9,7 @@ export class RemoteTCPWorker implements IRemoteWorker {
     private readonly _remoteWorkerLabel: string;
     private _connected: boolean = false
     private _messageHandlers: { [k: string]: (data: TJSON) => void } = {}
+    private _lastHealth?: THealthMessage | undefined
 
     constructor(
         private readonly _logger: ILogger,
@@ -69,11 +70,7 @@ export class RemoteTCPWorker implements IRemoteWorker {
     }
 
     setHealth(v: IBaseMessage & THealthMessage): void {
-        const message = JSON.stringify({
-            type: "HEALTH",
-            data: v,
-        })
-        this._socket.write(message)
+        this._lastHealth = v
     }
 
 
