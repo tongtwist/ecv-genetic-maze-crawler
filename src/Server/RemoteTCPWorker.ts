@@ -38,7 +38,7 @@ export class RemoteTCPWorker implements IRemoteWorker {
         this._socket.on('data', (data: Buffer) => {
             const message = JSON.parse(data.toString())
             const handler = this._messageHandlers[message.type]
-            this._logger.log(`-> ${JSON.stringify(message)}`)
+            this._logger.log(`-> ${JSON.stringify(message.hostname)}`)
             if (handler) {
                 handler(message.data)
             }
