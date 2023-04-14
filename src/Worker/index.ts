@@ -45,14 +45,17 @@ export async function processBehavior(cfg: TWorkerConfig) {
     process.exit(1);
   }
 
-  /*const healthEmitter = new HealthEmitter()
-	let emitExpandedHealth = true
-	const healthInterval = setInterval(async () => {
-		emitExpandedHealth = !(await healthEmitter.emit(remoteServer, emitExpandedHealth))
-	}, 10000*/
+  const healthEmitter = new HealthEmitter();
+  let emitExpandedHealth = true;
+  const healthInterval = setInterval(async () => {
+    emitExpandedHealth = !(await healthEmitter.emit(
+      remoteServer,
+      emitExpandedHealth
+    ));
+  }, 10000);
 
   remoteServer.subscribe("stop", () => {
-    //clearInterval(healthInterval)
+    clearInterval(healthInterval);
     appLogger.log("Stopped");
     process.exit(0);
   });

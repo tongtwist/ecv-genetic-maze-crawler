@@ -1,38 +1,27 @@
 import { IRemoteWorker } from "./RemoteWorker.spec";
-import {
-  IBaseMessage,
-  ILogger,
-  THealthMessage,
-  TJSON,
-  TMessageType,
-} from "../Common";
+import { ILogger, THealthMessage, TJSON } from "../Common";
 import { AddressInfo, Socket } from "net";
+import { RemoteWorker } from "../Common/RemoteWorker";
 
-export class RemoteTCPWorker implements IRemoteWorker {
+export class RemoteTCPWorker extends RemoteWorker implements IRemoteWorker {
   private readonly _adr: AddressInfo | {};
   private readonly _remoteWorkerLabel: string;
-  private _connected: boolean = false;
-  private _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
-  private _lastHealth?: THealthMessage | undefined;
 
   constructor(
-    private readonly _logger: ILogger,
+    protected readonly _logger: ILogger,
     private readonly _socket: Socket
   ) {
+    super(_logger);
     this._adr = this._socket.address();
     this._remoteWorkerLabel = `TCP Worker ${this._adrToString()}`;
   }
 
-  private _cleanState() {
-    this._connected = false;
-    this._messageHandlers = {};
-  }
-
-  private _adrToString(): string {
+  protected _adrToString(): string {
     return "family" in this._adr
       ? `${this._adr.family}://${this._adr.address}:${this._adr.port}`
       : "";
   }
+
   listen(): void {
     this._socket.on("connect", () => {
       this._connected = true;
@@ -41,10 +30,7 @@ export class RemoteTCPWorker implements IRemoteWorker {
 
     this._socket.on("data", (data: Buffer) => {
       const message = JSON.parse(data.toString());
-      const handler = this._messageHandlers[message.type];
-      if (handler) {
-        handler(message.data);
-      }
+      this._logger.log(`-> ${JSON.stringify(message.hostname)}`);
     });
 
     this._socket.on("close", () => {
@@ -58,8 +44,12 @@ export class RemoteTCPWorker implements IRemoteWorker {
     });
   }
 
+  stop(): void {
+    this._socket && this._socket.end();
+  }
+
   send(data: TJSON): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
+    return new Promise<boolean>((resolve, reject) => {
       const message = JSON.stringify(data);
       this._socket.write(message, "utf8", (err) => {
         if (err) {
@@ -70,22 +60,5 @@ export class RemoteTCPWorker implements IRemoteWorker {
         }
       });
     });
-  }
-
-  setHealth(v: IBaseMessage & THealthMessage): void {
-    this._lastHealth = v;
-  }
-
-  stop(): void {
-    this._socket && this._socket.end();
-  }
-
-  subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
-    if (!this._connected || !this._socket) {
-      this._cleanState();
-      return false;
-    }
-    this._messageHandlers[type] = handler;
-    return true;
   }
 }
