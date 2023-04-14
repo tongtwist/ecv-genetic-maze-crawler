@@ -5,13 +5,12 @@ import cluster, {Worker} from "node:cluster"
 import {Socket, createServer} from "node:net"
 import express from "express"
 import { DisconnectReason, Server as SocketIOServer, Socket as SocketIO } from "socket.io"
-import type { IMaze } from "./Maze.spec"
-import { Maze } from "./Maze"
-
 import { IResult, TJSON, messageFromJSON, Logger, IBaseMessage, THealthMessage } from "../Common"
 import type { IRemoteWorker } from "./RemoteWorker.spec"
 import { RemoteIPCWorker } from "./RemoteIPCWorker"
 import { RemoteTCPWorker } from "./RemoteTCPWorker"
+import { IMaze } from "../Common/Maze.spec"
+import { Maze } from "../Common/Maze"
 
 export type TServerConfig = {
 	readonly httpPort: number
