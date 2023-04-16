@@ -68,7 +68,51 @@ export class Guy implements IGuy {
 
         let position: Position = { x: 0, y: 0 }
         let direction: Position = { x: 0, y: 0 }
-        
+
+        let gene: 0 //haut
+        | 1 // gauche
+        | 2 // droite
+        | 3 // bas
+
+
+        for (gene of this.genome.genes) {
+            if (gene === 0) {
+                direction = { x: 0, y: -1 }
+            } else if (gene === 3) {
+                direction = { x: 0, y: 1 }
+            } else if (gene === 2) {
+                direction = { x: 1, y: 0 }
+            } else if (gene === 1) {
+                direction = { x: -1, y: 0 }
+                backtracks++
+            }
+
+            const nextPosition = {
+                x: position.x + direction.x,
+                y: position.y + direction.y,
+            }
+
+            if (nextPosition.x < 0 || nextPosition.x >= Maze.nbCols) {
+                wallHits++
+                continue
+            }
+
+            if (nextPosition.y < 0 || nextPosition.y >= Maze.nbRows) {
+                wallHits++
+                continue
+            }
+
+            position = nextPosition
+
+
+            if (position.x === target.x && position.y === target.y) {
+                targetReached = true
+                break
+            }
+
+            steps++
+        }
+       
         return {steps, wallHits, backtracks, targetReached}
     }
 

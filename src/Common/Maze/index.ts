@@ -3,6 +3,9 @@ import type {ICell} from "./Cell.spec"
 import {Cell} from "./Cell"
 
 export class Maze implements IMaze {
+    static isWall(nextPosition: { x: number; y: number }) {
+        throw new Error('Method not implemented.')
+    }
 	private static readonly _di = [0,-1,1,0]
 	private static readonly _dj = [-1,0,0,1]
 
@@ -11,6 +14,8 @@ export class Maze implements IMaze {
 	private _stack: ICell[]
 	private _currentCell: ICell
 	private _generationFinished: boolean
+    static nbCols: number
+    static nbRows: number
 
 	constructor(
 		private readonly _nbCols: number,
