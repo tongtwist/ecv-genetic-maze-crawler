@@ -8,31 +8,18 @@ import {
   TMessageType,
   messageFromJSON,
 } from "../Common";
+import { BaseRemoteWorker } from "./BaseRemoteWorker";
 
-export class RemoteTCPWorker implements IRemoteWorker {
+export class RemoteTCPWorker extends BaseRemoteWorker implements IRemoteWorker {
   private readonly _adrr: AddressInfo | {};
-  private readonly _remoteWorkerLabel: string;
-  private _listening: boolean = false;
-  private _messageHandlers: { [k: string]: (data: TJSON) => void } = {};
-  private _lastHealth?: IBaseMessage & THealthMessage;
-
+  
   constructor(
-    private readonly _logger: ILogger,
+    protected readonly _logger: ILogger,
     private readonly _socket: Socket
   ) {
+    super(_logger);
     this._adrr = _socket.address();
     this._remoteWorkerLabel = `TCP Worker ${this._adrToString()}`;
-  }
-  setHealth(v: IBaseMessage & THealthMessage): void {
-    this._lastHealth = v;
-  }
-
-  subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean {
-    if (!this._listening) {
-      return false;
-    }
-    this._messageHandlers[type] = handler;
-    return true;
   }
 
   private _adrToString(): string {
@@ -75,10 +62,4 @@ export class RemoteTCPWorker implements IRemoteWorker {
     });
   }
 
-  stop(): void {
-    this._messageHandlers = {};
-    this._listening = false;
-    this._logger.log(`Do not listen TCP Worker ${this._adrToString()} anymore`);
-    this._socket.end();
-  }
 }
