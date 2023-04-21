@@ -34,6 +34,8 @@ export class World implements IWorld {
 			}
 			result = result / walk.steps
 			result = result * (1 - walk.closestDistance / maxDistance)
+			result = result * (1 - walk.wallHits / walk.steps)
+			result = result * (1 - walk.backtracks / walk.steps)
 		}
 		return result
 	}
