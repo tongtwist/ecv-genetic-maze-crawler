@@ -1,12 +1,12 @@
-import type {IMaze} from "./Maze.spec"
-import type {Position, Walk, IGuy} from "./Guy.spec"
-import {Guy} from "./Guy"
+import type { IMaze } from "./Maze.spec"
+import type { Position, Walk, IGuy } from "./Guy.spec"
+import { Guy } from "./Guy"
 import type { Solution, Generation, IWorld } from "./World.spec"
 
 export class World implements IWorld {
 	private _generation = 0
 	private _walks: Walk[] = []
-	private _explorations: {[k: number]: number} = {}
+	private _explorations: { [k: number]: number } = {}
 	private _fitnesses: number[] = []
 	private _ranks: number[] = []
 	private _target: Position
@@ -24,16 +24,15 @@ export class World implements IWorld {
 
 	private _fitness(walk: Walk): number {
 		const maxDistance = this._maze.nbCols + this._maze.nbRows
-		let result
+		let result = 0
 		if (walk.closestDistance === 0) {
 			result = 1 + (maxDistance / walk.steps)
 		} else {
-			result = 0
 			for (const idx in walk.exploration) {
 				result += 1 / this._explorations[idx]
 			}
-			result = result / walk.steps
-			result = result * (1 - walk.closestDistance / maxDistance)
+			result /= walk.steps
+			result *= (1 - walk.closestDistance / maxDistance)
 		}
 		return result
 	}
@@ -60,7 +59,7 @@ export class World implements IWorld {
 			const guyID = this._ranks[i]
 			const fitness = this._fitnesses[guyID]
 			const walk = this._walks[guyID]
-			solutions.push({guyID, walk, fitness})
+			solutions.push({ guyID, walk, fitness })
 		}
 		return solutions
 	}
@@ -126,7 +125,7 @@ export class World implements IWorld {
 			maxFitness,
 			avgFitness,
 			solutions,
-			explorations: {...this._explorations},
+			explorations: { ...this._explorations },
 		}
 	}
 
