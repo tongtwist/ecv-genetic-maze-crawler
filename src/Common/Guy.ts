@@ -64,12 +64,12 @@ export class Guy implements IGuy {
         return {steps, wallHits, backtracks, targetReached};
     }
 
-        /*public getNextGene(): void {
-            this.currentGeneIndex++;
-            if (this.currentGeneIndex === this.genes.length) {
-                this.currentGeneIndex = 0;
-            }
-        }*/
+    /*public getNextGene(): void {
+        this.currentGeneIndex++;
+        if (this.currentGeneIndex === this.genes.length) {
+            this.currentGeneIndex = 0;
+        }
+    }*/
 
    /* public walk(target: Position): Walk {
         let x = 0;

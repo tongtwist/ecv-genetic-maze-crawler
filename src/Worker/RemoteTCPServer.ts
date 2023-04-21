@@ -44,7 +44,6 @@ export class RemoteServer implements IRemoteServer {
 			this._socket = createConnection({
 				port: this._port,
 				host: this._host,
-				timeout
 			}, () => {
 				this._logger.log(`TCP connection established with ${this._host}:${this._port}`)
 			})
