@@ -1,4 +1,5 @@
-import type {TMessageType, IBaseMessage, TJSON, THealthMessage, IMaze} from "../Common"
+import type { TJSON, IMaze} from "../Common"
+import type {TMessageType, IBaseMessage,THealthMessage} from "../Message.spec"
 
 export interface IRemoteWorker {
 	/**
