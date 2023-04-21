@@ -13,3 +13,7 @@ export type {
 export * from "./Message"
 export type {ILogger} from "./Logger.spec"
 export * from "./Logger"
+export type {TMazeJson, IMaze} from "./Maze.spec"
+export * from "./Maze"
+export type {IWorld, Generation, Solution} from "./World.spec"
+export * from "./World"

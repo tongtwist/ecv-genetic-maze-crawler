@@ -5,6 +5,7 @@ import type { IRemoteWorker } from "./RemoteWorker.spec"
 
 export class RemoteTCPWorker extends BaseRemoteWorker implements IRemoteWorker {
 	private readonly _adr: AddressInfo | {}
+	private _pendingTxt: string = ""
 
 	constructor(
 		readonly _logger: ILogger,
@@ -13,6 +14,8 @@ export class RemoteTCPWorker extends BaseRemoteWorker implements IRemoteWorker {
 		super(_logger)
 		this._adr = this._socket.address()
 		this._remoteWorkerLabel = `TCP Worker ${this._adrToString()}`
+		this._socket.setKeepAlive(true)
+		this._socket.setNoDelay(true)
 	}
 
 	private _adrToString(): string {
@@ -25,12 +28,17 @@ export class RemoteTCPWorker extends BaseRemoteWorker implements IRemoteWorker {
 		const txt = buf.toString("utf-8")
 		let data: TJSON
 		try {
-			data = JSON.parse(txt)
+			data = JSON.parse(this._pendingTxt + txt)
 		} catch(e) {
-			this._logger.err(`-> Invalid JSON data: ${(e as Error).message}`)
+			if ((e as Error).message === "Unexpected end of JSON input") {
+				this._pendingTxt += txt
+			} else {
+				this._logger.err(`-> Invalid JSON data: ${(e as Error).message}, ("${txt}")`)
+			}
 			return
 		}
 		this._messageHandler(data)
+		this._pendingTxt = ""
 	}
 
 	listen() {
@@ -42,10 +50,16 @@ export class RemoteTCPWorker extends BaseRemoteWorker implements IRemoteWorker {
 	send(data: TJSON): Promise<boolean> {
 		const txt = JSON.stringify(data)
 		return new Promise(
-			(resolve: (v: boolean) => void) => this._socket.write(
+			(resolve: (v: boolean) => void, reject: (reason?: any) => void) => this._socket.write(
 				txt,
 				"utf-8",
-				(error?: Error | null) => resolve(!!error)
+				(error?: Error | null) => {
+					if (error) {
+						this._logger.err(`-> Error sending data: ${error.message}`)
+						reject(error)
+					}
+					resolve(!!error)
+				}
 			)
 		)
 	}

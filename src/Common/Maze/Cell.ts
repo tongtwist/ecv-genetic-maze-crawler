@@ -16,11 +16,11 @@ export class Cell implements ICell {
 		this._grid = this._maze.grid
 		this._idx = this._maze.getIdx(this._i, this._j)
 		this._visited = Array.isArray(walls)
-		this._walls = this._visited ? walls! : [true, true, true, true]
+		this._walls = this._visited ? [...walls!] : [true, true, true, true]
 	}
 
 	get visited(): boolean { return this._visited }
-	get walls(): ICell["walls"] { return this._walls }
+	get walls(): ICell["walls"] { return [...this._walls] }
 	get i(): number { return this._i }
 	get j(): number { return this._j }
 	get idx(): number { return this._idx }
@@ -69,6 +69,6 @@ export class Cell implements ICell {
 	}
 
 	static wallsFromJSON(j: number): [boolean, boolean, boolean, boolean] {
-		return [(1&j)>0,(2&j)>0,(4&j)>0,(8&j)>0];
+		return [(1&j)>0,(2&j)>0,(4&j)>0,(8&j)>0]
 	}
 }

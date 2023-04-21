@@ -116,6 +116,6 @@ export class Maze implements IMaze {
 
 	static fromJSON(nbCols: number, nbRows: number, json: TMazeJson): IMaze {
 		const walls: [boolean, boolean, boolean, boolean][] = json.g.map((flags: number) => Cell.wallsFromJSON(flags))
-		return new Maze(nbCols, nbRows)//, walls)
+		return new Maze(nbCols, nbRows, walls)
 	}
 }

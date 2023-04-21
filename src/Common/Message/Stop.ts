@@ -1,9 +1,9 @@
 import { z } from "zod"
 import type { IResult } from "../Result.spec"
+import { Result } from "../Result"
 import type { TJSON, TJSONObject } from "../JSON.spec"
 import type { IBaseMessage } from "../Message.spec"
-import type { TStopMessageType, TStopMessage } from "./StopMessage.spec"
-import { Result } from "../Result"
+import type { TStopMessageType, TStopMessage } from "./Stop.spec"
 
 
 export class StopMessage implements IBaseMessage, TStopMessage {
