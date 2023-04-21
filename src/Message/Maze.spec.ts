@@ -1,5 +1,4 @@
-import type { IMaze } from "../Maze.spec"
-import type { TMazeJson } from "../Maze.spec"
+import type { IMaze, TMazeJson } from "../Common"
 
 export type TMazeMessageType = "maze"
 

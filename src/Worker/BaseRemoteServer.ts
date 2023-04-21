@@ -1,4 +1,5 @@
-import { TJSON, messageFromJSON, ILogger } from "../Common"
+import { messageFromJSON } from "../Message"
+import { TJSON, ILogger } from "../Common"
 import type { IRemoteServer } from "./RemoteServer.spec"
 
 export abstract class BaseRemoteServer implements IRemoteServer {

@@ -1,5 +1,7 @@
 import process from "node:process"
-import { TJSON, TMessageType, messageFromJSON, ILogger } from "../Common"
+import type { TMessageType } from "../Message.spec"
+import { messageFromJSON } from "../Message"
+import { TJSON, ILogger } from "../Common"
 import { BaseRemoteServer } from "./BaseRemoteServer"
 import type { IRemoteServer } from "./RemoteServer.spec"
 

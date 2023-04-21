@@ -1,4 +1,4 @@
-import type {TJSON} from "../Common"
+import type {TJSON} from "./Common"
 import type {
 	THealthMessageType, THealthMessage,
 	TStopMessageType, TStopMessage,

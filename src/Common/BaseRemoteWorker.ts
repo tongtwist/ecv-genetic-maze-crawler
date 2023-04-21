@@ -1,7 +1,9 @@
-import {IBaseMessage, THealthMessage, TMessageType} from "./Message.spec";
+
 import {TJSON} from "./JSON.spec";
 import {ILogger} from "./Logger.spec";
-import {messageFromJSON} from "./Message";
+import {IBaseMessage, THealthMessage, TMessageType} from "../Message.spec";
+import {messageFromJSON} from "../Message";
+
 
 export abstract class BaseRemoteWorker{
     protected _lastHealth?: IBaseMessage & THealthMessage

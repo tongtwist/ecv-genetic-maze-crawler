@@ -2,15 +2,12 @@ import {
 	ILogger,
 	TJSON,
 	IMaze,
-	TMazeMessage,
-	MazeMessage,
 	Maze,
 	IWorld,
 	World,
 	Generation,
-	WorldsStateMessage,
-	SimulateMessage,
 } from "../Common"
+import {TMazeMessage,MazeMessage,WorldsStateMessage,SimulateMessage} from "../Message"
 import type { IRemoteServer } from "./RemoteServer.spec"
 
 export class WorkerLogic {

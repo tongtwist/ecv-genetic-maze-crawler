@@ -1,8 +1,5 @@
 import { z } from "zod"
-import type { IResult } from "../Result.spec"
-import { Result } from "../Result"
-import type { TJSON, TJSONObject } from "../JSON.spec"
-import type { Generation } from "../World.spec"
+import { IResult, Result, TJSON, TJSONObject, Generation } from "../Common"
 import type { IBaseMessage } from "../Message.spec"
 import type { TWorldsStateMessageType, TWorldsStateMessage } from "./WorldsState.spec"
 

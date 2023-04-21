@@ -1,8 +1,8 @@
 import os from "node:os"
-import { ILogger, HealthMessage, THealthMessage, TJSON, TLongCPUMessage, TShortCPUMessage } from "../Common"
+import { HealthMessage, THealthMessage, TLongCPUMessage, TShortCPUMessage } from "../Message"
+import { ILogger,  TJSON } from "../Common"
 import type { IRemoteServer } from "./RemoteServer.spec"
-import { IBaseMessage } from "../Common/Message.spec"
-import {hostname} from "os";
+import { IBaseMessage } from "../Message.spec"
 
 
 export class HealthEmitter {
@@ -58,7 +58,7 @@ export class HealthEmitter {
 			...c.times,
 			speed: c.speed,
 		}))
-		const msg: IBaseMessage & THealthMessage = new HealthMessage(timestamp,loadAvg,cpus,freeMem,uptime,this._hostname)
+		const msg: IBaseMessage & THealthMessage = new HealthMessage(timestamp,loadAvg,cpus,freeMem,uptime)
 		return msg.toJSON()
 	}
 
