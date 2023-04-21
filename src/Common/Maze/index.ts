@@ -119,3 +119,5 @@ export class Maze implements IMaze {
 		return new Maze(nbCols, nbRows, walls)
 	}
 }
+
+export type {ICell}

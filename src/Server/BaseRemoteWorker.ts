@@ -1,15 +1,12 @@
+import { TJSON, ILogger, IMaze } from "../Common"
 import {
-	TJSON,
-	TMessageType,
-	IBaseMessage,
 	messageFromJSON,
-	ILogger,
 	THealthMessage,
 	StopMessage,
-	IMaze,
 	MazeMessage,
-	SimulateMessage,
-} from "../Common"
+	SimulateMessage
+} from "../Message"
+import type {TMessageType,IBaseMessage,} from "../Message.spec"
 import type { IRemoteWorker } from "./RemoteWorker.spec"
 
 export abstract class BaseRemoteWorker implements IRemoteWorker {

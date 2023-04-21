@@ -1,5 +1,4 @@
-import type {Generation} from "../World.spec"
-
+import type {Generation} from "../Common"
 
 export type TWorldsStateMessageType = "worldsState"
 

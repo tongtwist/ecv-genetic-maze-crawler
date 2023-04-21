@@ -3,16 +3,18 @@ import {
 	ILogger,
 	IResult,
 	TJSON,
-	messageFromJSON,
-	IBaseMessage,
-	THealthMessage,
 	IMaze,
 	Maze,
-	WorldsStateMessage,
 	Generation,
 	Solution,
-	HealthMessage,
 } from "../Common"
+import {
+	messageFromJSON,
+	THealthMessage,
+	WorldsStateMessage,
+	HealthMessage,
+} from "../Message"
+import type { IBaseMessage } from "../Message.spec"
 import type { IRemoteWorker } from "./RemoteWorker.spec"
 
 export class ServerLogic {

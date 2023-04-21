@@ -1,11 +1,6 @@
 import {z} from "zod"
-import type { IResult } from "../Result.spec"
-import { Result } from "../Result"
-import type { TJSON, TJSONObject } from "../JSON.spec"
+import { IResult, Result, TJSON, TJSONObject, ICell, IMaze, Maze } from "../Common"
 import type { IBaseMessage } from "../Message.spec"
-import type { ICell } from "../Maze/Cell.spec"
-import type { IMaze } from "../Maze.spec"
-import {Maze} from "../Maze"
 import type { TMazeMessageType, TMazeMessage, IMazeMessage } from "./Maze.spec"
 
 export class MazeMessage implements IBaseMessage, IMazeMessage {

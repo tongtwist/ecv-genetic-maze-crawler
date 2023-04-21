@@ -1,7 +1,8 @@
 import os from "node:os"
-import { ILogger, HealthMessage, THealthMessage, TJSON, TLongCPUMessage, TShortCPUMessage } from "../Common"
+import { HealthMessage, THealthMessage, TLongCPUMessage, TShortCPUMessage } from "../Message"
+import { ILogger,  TJSON } from "../Common"
 import type { IRemoteServer } from "./RemoteServer.spec"
-import { IBaseMessage } from "../Common/Message.spec"
+import { IBaseMessage } from "../Message.spec"
 
 
 export class HealthEmitter {
