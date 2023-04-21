@@ -7,7 +7,7 @@ export type Position = {
 
 export type Walk = {
     steps: number;
-    walkHits: number;
+    wallHits: number;
     backtracks: number;
     targetReached: boolean;
 }

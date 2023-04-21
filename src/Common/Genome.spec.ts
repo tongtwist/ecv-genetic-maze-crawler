@@ -1,8 +1,8 @@
 export type TGene = 0 | 1 | 2 | 3
 
 export interface IGenome {
-    readonly genes: TGene[]
-    readonly length: number
+    readonly _genes: TGene[]
+    readonly _length: number
     getGenomeLength(): number
     swap (idx?: number): void
     insert (idx?: number): void
