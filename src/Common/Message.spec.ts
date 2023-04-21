@@ -5,6 +5,11 @@ import type {
   TStopMessageType,
   TStopMessage,
 } from "./Message";
+	THealthMessageType, THealthMessage,
+	TStopMessageType, TStopMessage,
+	TMazeMessageType, TMazeMessage,
+	TWorldsStateMessageType, TWorldsStateMessage,
+	TSimulateMessageType, TSimulateMessage,
 
 export type TMessageType = THealthMessageType | TStopMessageType;
 

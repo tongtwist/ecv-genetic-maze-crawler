@@ -1,10 +1,20 @@
-import type {TMessageType, IBaseMessage, TJSON, THealthMessage} from "../Common"
+import type {TMessageType, IBaseMessage, TJSON, THealthMessage, IMaze} from "../Common"
 
 export interface IRemoteWorker {
+	/**
+	 * Partie spécifique du type de connexion
+	 */
+	listen(): void
+	send(data: TJSON): Promise<boolean>
+
+	/**
+	 * Partie commune
+	 */
+	subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean
+	readonly label: string
 	readonly lastHealth?: THealthMessage
 	setHealth(v: IBaseMessage & THealthMessage): void
-	listen(): void
-	stop(): void
-	send(data: TJSON): Promise<boolean>
-	subscribe(type: TMessageType, handler: (data: TJSON) => void): boolean
+	stop(): Promise<boolean>
+	setMaze(maze: IMaze): Promise<boolean>
+	simulate(nbGeneration: number, growthRate?: number): Promise<boolean>
 }
