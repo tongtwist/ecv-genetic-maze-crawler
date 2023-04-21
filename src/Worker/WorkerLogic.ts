@@ -63,7 +63,7 @@ export class WorkerLogic {
 			this.logger.log(`Create ${this.nbThreads} worlds`)
 			this._worlds = []
 			for (let i = 0; i < this.nbThreads; i++) {
-				this._worlds.push(World.createRandomWorld(this._maze, 500))
+				this._worlds.push(World.createRandomWorld(this._maze, 100))
 			}
 		}
 	}
