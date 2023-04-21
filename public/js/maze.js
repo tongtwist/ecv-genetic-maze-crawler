@@ -14,6 +14,7 @@ class Cell {
 		this.ctx.moveTo(x1, y1);
 		this.ctx.lineTo(x2, y2);
 		this.ctx.stroke();
+		this.ctx.closePath();
 	}
 
 	draw(color, cellSize) {
@@ -55,11 +56,36 @@ class Maze {
 		return j * this.nbCols + i;
 	}
 
-    draw() {
+	drawVisit(idx, n) {
+		const j = Math.floor(idx / this.nbCols);
+		const i = idx - j * this.nbCols;
+		const v = 255 - Math.round(n * 255);
+		const x = (i + 0.5) * this.cellSize;
+		const y = (j + 0.5) * this.cellSize;
+		this.ctx.beginPath();
+		this.ctx.arc(x, y, this.cellSize * 0.4, 0, Math.PI * 1.9);
+		this.ctx.fillStyle = `rgb(255,${v},128)`;
+		this.ctx.fill();
+	}
+
+	drawExplorations(explorations) {
+		let maxVisit = 0;
+		for (const idx in explorations) {
+			maxVisit = Math.max(maxVisit, explorations[idx]);
+		}
+		for (const idx in explorations) {
+			this.drawVisit(idx, explorations[idx] / maxVisit);
+		}
+	}
+
+    draw(state) {
 		this.ctx.fillStyle = "#000";
 		this.ctx.fillRect(0, 0, this.width, this.height);
 		for (let i = 0; i < this.grid.length; i++) {
 			this.grid[i].draw("#00F", this.cellSize);
+		}
+		if (state) {
+			this.drawExplorations(state.explorations);
 		}
 	}
 

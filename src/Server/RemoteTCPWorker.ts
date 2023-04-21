@@ -1,56 +1,66 @@
-import { TJSON, TMessageType, IBaseMessage, messageFromJSON, ILogger, THealthMessage, StopMessage } from "../Common";
-import { BaseWorker } from "./BaseRemoteWorker";
-import type { IRemoteWorker } from "./RemoteWorker.spec";
-import { AddressInfo, Socket } from "net";
+import { AddressInfo, Socket } from "net"
+import type {TJSON,ILogger} from "../Common"
+import { BaseRemoteWorker } from "./BaseRemoteWorker"
+import type { IRemoteWorker } from "./RemoteWorker.spec"
 
-export class RemoteTCPWorker extends BaseWorker implements IRemoteWorker {
-    private _adr: AddressInfo | {};
+export class RemoteTCPWorker extends BaseRemoteWorker implements IRemoteWorker {
+	private readonly _adr: AddressInfo | {}
+	private _pendingTxt: string = ""
 
-    constructor(protected readonly _logger: ILogger, private readonly _socket: Socket) {
-        super(_logger);
-        this._adr = this._socket.address();
-    }
+	constructor(
+		readonly _logger: ILogger,
+		private readonly _socket: Socket
+	) {
+		super(_logger)
+		this._adr = this._socket.address()
+		this._remoteWorkerLabel = `TCP Worker ${this._adrToString()}`
+		this._socket.setKeepAlive(true)
+		this._socket.setNoDelay(true)
+	}
 
-    listen() {
-        this._socket.on("data", (data: Buffer) => {
-            const txt = data.toString();
-            this._logger.log(`Received ${data.length} bytes from ${this._adr} ("${txt}")`);
-            let j: TJSON | undefined;
-            try {
-                j = JSON.parse(txt);
-            } catch (e) {
-                this._logger.log(`The received data is not a valid JSON and cannot be processed: ${e}`);
-            }
-            if (typeof j !== undefined) {
-                this._messageHandler(j!);
-            }
-        });
-        this._listening = true;
-        this._logger.log(`Listening TCP Worker on ${this._adr}...`);
-    }
+	private _adrToString(): string {
+		return "family" in this._adr
+			? `${this._adr.family}://${this._adr.address}:${this._adr.port}`
+			: ""
+	}
+	
+	protected _bufferHandler(buf: Buffer) {
+		const txt = buf.toString("utf-8")
+		let data: TJSON
+		try {
+			data = JSON.parse(this._pendingTxt + txt)
+		} catch(e) {
+			if ((e as Error).message === "Unexpected end of JSON input") {
+				this._pendingTxt += txt
+			} else {
+				this._logger.err(`-> Invalid JSON data: ${(e as Error).message}, ("${txt}")`)
+			}
+			return
+		}
+		this._messageHandler(data)
+		this._pendingTxt = ""
+	}
 
-    stop() {
-        this._messageHandlers = {};
-        this._listening = false;
-        this._logger.log(`Do not listen TCP Worker on ${this._adr} anymore`);
-        this.send({ type: StopMessage.type });
-        this._socket.end();
-    }
+	listen() {
+		this._socket.on("data", this._bufferHandler.bind(this))
+		this._listening = true
+		this._logger.log(`Listening ${this._remoteWorkerLabel} ...`)
+	}
 
-    async send(data: TJSON): Promise<boolean> {
-        if (!this._socket) {
-            return Promise.resolve(false);
-        }
-
-        return new Promise((resolve: (v: boolean) => void) => {
-            this._socket!.write(JSON.stringify(data), "utf8", (err?: Error) => {
-                if (err) {
-                    this._logger.log(`Error when emitting data to the server: ${err}`);
-                    resolve(false);
-                } else {
-                    resolve(true);
-                }
-            });
-        });
-    }
+	send(data: TJSON): Promise<boolean> {
+		const txt = JSON.stringify(data)
+		return new Promise(
+			(resolve: (v: boolean) => void, reject: (reason?: any) => void) => this._socket.write(
+				txt,
+				"utf-8",
+				(error?: Error | null) => {
+					if (error) {
+						this._logger.err(`-> Error sending data: ${error.message}`)
+						reject(error)
+					}
+					resolve(!!error)
+				}
+			)
+		)
+	}
 }
