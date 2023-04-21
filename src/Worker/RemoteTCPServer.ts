@@ -40,11 +40,10 @@ export class RemoteServer implements IRemoteServer {
 		}
 		this._cleanState()
 		return new Promise((resolve: (v: boolean) => void) => {
-			const timeout = 5000
 			this._socket = createConnection({
 				port: this._port,
 				host: this._host,
-				timeout
+				keepAlive: true
 			}, () => {
 				this._logger.log(`TCP connection established with ${this._host}:${this._port}`)
 			})
@@ -62,7 +61,7 @@ export class RemoteServer implements IRemoteServer {
 				this._cleanState()
 			})
 			this._socket.on("timeout", () => {
-				this._logger.log(`Connection timeout. It takes more than ${timeout}ms to connect to ${this._host}:${this._port}`)
+				this._logger.log(`Connection timeout. It takes too long to connect to ${this._host}:${this._port}`)
 				this._cleanState()
 			})
 			this._socket.on("data", (data: Buffer) => {
