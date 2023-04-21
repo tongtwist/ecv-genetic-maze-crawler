@@ -1,7 +1,5 @@
 import { z } from "zod"
-import type { TJSON } from "../JSON.spec"
-import type { IResult} from "../Result.spec"
-import { Result} from "../Result"
+import { TJSON, IResult, Result } from "../Common"
 import type { IBaseMessage, TMessage } from "../Message.spec"
 
 import { HealthMessage } from "./Health"

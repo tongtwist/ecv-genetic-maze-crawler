@@ -1,4 +1,5 @@
-import type {TMessageType, TJSON} from "../Common"
+import type {TJSON} from "../Common"
+import type {TMessageType} from "../Message.spec"
 
 export interface IRemoteServer {
 	/**
