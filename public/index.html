@@ -12,13 +12,11 @@
 	<main>
 		<h1>Genetic Maze Crawler</h1>
 		<div id="canvas-container">
-			<div>
-				Last server activity is: <span id="serverState">Disconnected from server</span>
-			</div>
+			<div>State is: <span id="serverState">Disconnected from server</span></div>
 			<canvas id="mazeCanvas"></canvas>
 			<canvas id="solutionsCanvas"></canvas>
 		</div>
-		<div id="stats"></div>
+		<button id="startBtn" style="visibility: hidden;">Start</button>
 	</main>
 	<script src="js/maze.js"></script>
 	<script src="js/ui.js"></script>

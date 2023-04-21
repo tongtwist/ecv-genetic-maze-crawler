@@ -1,5 +1,6 @@
 import { z } from "zod"
 import type { IResult } from "../Result.spec"
+import { Result } from "../Result"
 import type { TJSON, TJSONObject } from "../JSON.spec"
 import type { IBaseMessage } from "../Message.spec"
 import type {
@@ -7,8 +8,7 @@ import type {
 	TShortCPUMessage,
 	TLongCPUMessage,
 	THealthMessage,
-} from "./HealthMessage.spec"
-import { Result } from "../Result"
+} from "./Health.spec"
 
 export class HealthMessage implements IBaseMessage, THealthMessage {
 	static readonly type: THealthMessageType = "health"

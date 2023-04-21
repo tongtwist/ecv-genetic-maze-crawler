@@ -1,6 +1,7 @@
-import type {TMazeJson, IMaze} from "../../Server/Maze.spec"
+
 import type {ICell} from "./Cell.spec"
 import {Cell} from "./Cell"
+import {IMaze, TMazeJson} from "../Maze.spec";
 
 export class Maze implements IMaze {
 	private static readonly _di = [0,-1,1,0]
@@ -116,6 +117,6 @@ export class Maze implements IMaze {
 
 	static fromJSON(nbCols: number, nbRows: number, json: TMazeJson): IMaze {
 		const walls: [boolean, boolean, boolean, boolean][] = json.g.map((flags: number) => Cell.wallsFromJSON(flags))
-		return new Maze(nbCols, nbRows)//, walls)
+		return new Maze(nbCols, nbRows, walls)
 	}
 }
