@@ -39,6 +39,6 @@ export function setupWebServices(
 			}
 			logic.addSocketIO(s)
 		})
-		httpServer.listen(cfg.httpPort, () => logger.log(`HTTP service listening on port ${cfg.httpPort}...`))
+		httpServer.listen(cfg.httpPort, "127.0.0.1", () => logger.log(`HTTP service listening on port ${cfg.httpPort}...`))
 	}
 }
