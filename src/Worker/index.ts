@@ -69,12 +69,10 @@ function setupHealthEmitter(
 
 export async function processBehavior(cfg: TWorkerConfig) {
 	const [appLogger, isLocalWorker] = setupWorkerLogger(cfg);
+	const remoteServer = await setupRemoteServer(cfg, isLocalWorker);
+	const stopHealthEmitter = setupHealthEmitter(remoteServer, appLogger);
 	const workerThreads:any = [];
-
 	for (let i = 0; i < cfg.nbThreads; i++) {
-		const remoteServer = await setupRemoteServer(cfg, isLocalWorker); // initialise remoteServer pour chaque thread
-		const stopHealthEmitter = setupHealthEmitter(remoteServer, appLogger);
-
 		const workerThread = new Worker(__filename);
 		workerThreads.push(workerThread);
 
@@ -83,7 +81,7 @@ export async function processBehavior(cfg: TWorkerConfig) {
 		});
 
 		workerThread.on("error", (error) => {
-			appLogger.err(error.message);
+			appLogger.err(`Error in thread ${workerThread.threadId}:`,);
 		});
 
 		workerThread.on("exit", (code) => {
@@ -118,4 +116,3 @@ export async function processBehavior(cfg: TWorkerConfig) {
 
 	}
 }
-
