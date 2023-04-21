@@ -26,7 +26,7 @@ export class Guy implements IGuy {
 	) {
 		const nbGenes = Math.max(
 			this._maze.nbCols + this._maze.nbRows,
-			this._maze.nbCols * this._maze.nbRows * 0.33,
+			this._maze.nbCols * this._maze.nbRows * 0.5,
 		)
 		this._genome = givenGenome ?? Genome.create(nbGenes)
 	}

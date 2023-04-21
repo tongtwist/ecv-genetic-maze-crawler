@@ -22,21 +22,56 @@ export class World implements IWorld {
 		}
 	}
 
+	// private _fitness(walk: Walk): number {
+	// 	const maxDistance = this._maze.nbCols + this._maze.nbRows
+	// 	let result
+	// 	if (walk.closestDistance === 0) {
+	// 		result = 1 + (maxDistance / walk.steps)
+	// 	} else {
+	// 		result = 0
+	// 		for (const idx in walk.exploration) {
+	// 			result += 1 / this._explorations[idx]
+	// 		}
+	// 		result = result / walk.steps
+	// 		result = result * (1 - walk.closestDistance / maxDistance)
+	// 	}
+	// 	return result
+	// }
+
 	private _fitness(walk: Walk): number {
-		const maxDistance = this._maze.nbCols + this._maze.nbRows
-		let result
-		if (walk.closestDistance === 0) {
-			result = 1 + (maxDistance / walk.steps)
-		} else {
-			result = 0
-			for (const idx in walk.exploration) {
-				result += 1 / this._explorations[idx]
-			}
-			result = result / walk.steps
-			result = result * (1 - walk.closestDistance / maxDistance)
+		const maxDistance = this._maze.nbCols + this._maze.nbRows;
+		const closestDistance = walk.closestDistance;
+		const steps = walk.steps;
+	  
+		if (closestDistance === 0) {
+		  return 1 + (maxDistance / steps);
 		}
-		return result
+	  
+		let sum = 0;
+		let count = 0;
+		// On récupère l'objet exploration
+		const exploration = walk.exploration;
+		if (exploration) {
+			for (const idx in exploration) {
+				//On récupère la valeur correspondante
+				const explorationValue = this._explorations[idx];
+				sum += 1 / explorationValue;
+				
+			}
+			// On incrémente le compteur
+			count++;
+		}
+
+		const moyenne1 = count / steps;
+
+		const moyenne2 = sum / steps * (1 - closestDistance / maxDistance);
+
+		const result = (moyenne1 + moyenne2) / 2;
+	  
+		return result;
 	}
+
+
 
 	private _evaluatePopulation() {
 		this._walks = this._population.map((guy: IGuy) => guy.walk(this._target))
